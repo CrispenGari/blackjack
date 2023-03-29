@@ -3,9 +3,12 @@ import styles from "@/styles/Register.module.css";
 import { CForm, CImage, CFormInput, CButton, CAlert } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
+import { Loading } from "@/components";
+import { useGamerStore } from "@/store";
 interface Props {}
 const Register: React.FC<Props> = ({}) => {
   const router = useRouter();
+  const { gamer } = useGamerStore((state) => state);
   const [{ nickname, password, confirmPassword }, setForm] = React.useState<{
     nickname: string;
     password: string;
@@ -32,12 +35,22 @@ const Register: React.FC<Props> = ({}) => {
     };
   }, [data, router]);
 
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!gamer?.loggedIn) {
+      router.replace("/");
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [router, gamer]);
+
   return (
     <div className={styles.register}>
       <div className={styles.register__left}>
         <CForm onSubmit={onSubmit}>
           <h1>blackjack</h1>
-          <CImage src="/logo.png" />
+          <CImage src="/logo.png" alt="logo" />
           <h2>Hello World Welcome!!</h2>
           <CFormInput
             type="text"

@@ -1,6 +1,10 @@
 export const __cookieName__: string = "qid";
 export const __cookieMaxAge__: number = 1000 * 60 * 60 * 24 * 7; // 7 days
 
+export enum Events {
+  ON_AUTH_STATE_CHANGED = "ON_AUTH_STATE_CHANGED",
+}
+
 export const CARDS = [
   { id: "A_OF_HEARTS", index: 0, value: "A" },
   { id: "A_OF_SPADES", index: 1, value: "A" },

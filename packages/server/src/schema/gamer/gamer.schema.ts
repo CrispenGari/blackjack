@@ -12,3 +12,7 @@ export const registerSchema = z.object({
   confirmPassword: z.string(),
   web: z.boolean(),
 });
+
+export const onAuthStateChangeSchema = z.object({
+  gamerId: z.string(),
+});

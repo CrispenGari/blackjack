@@ -1,10 +1,38 @@
-import { loginSchema, registerSchema } from "../../schema/gamer/gamer.schema";
+import {
+  loginSchema,
+  onAuthStateChangeSchema,
+  registerSchema,
+} from "../../schema/gamer/gamer.schema";
 import { publicProcedure, router } from "../../trpc";
 import { serialize } from "cookie";
 import bcrypt from "bcryptjs";
 import { signJwt, verifyJwt } from "../../utils";
-import { __cookieMaxAge__, __cookieName__ } from "../../constants";
+import { Events, __cookieMaxAge__, __cookieName__ } from "../../constants";
+import { observable } from "@trpc/server/dist/observable";
+import EventEmitter from "events";
+
+const ee = new EventEmitter({
+  captureRejections: true,
+});
 export const gamerRouter = router({
+  onAuthStateChange: publicProcedure
+    .input(onAuthStateChangeSchema)
+    .subscription(({ input: { gamerId } }) => {
+      return observable<{ jwt: string } | null>((emit) => {
+        const handleEvent = async (user: any) => {
+          if (!!user) {
+            if (user.duid === gamerId) {
+              const jwt = await signJwt(user);
+              emit.next(user.isLoggedIn ? { jwt } : { jwt: "" });
+            }
+          }
+        };
+        ee.on(Events.ON_AUTH_STATE_CHANGED, handleEvent);
+        return () => {
+          ee.off(Events.ON_AUTH_STATE_CHANGED, handleEvent);
+        };
+      });
+    }),
   gamer: publicProcedure.query(async ({ ctx: { prisma, req } }) => {
     const jwt = req.cookies[__cookieName__];
     if (!!!jwt) return { gamer: null };

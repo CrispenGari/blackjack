@@ -3,9 +3,11 @@ import styles from "@/styles/Login.module.css";
 import { CForm, CImage, CFormInput, CAlert, CButton } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
+import { useGamerStore } from "@/store";
 interface Props {}
 const Login: React.FC<Props> = ({}) => {
   const router = useRouter();
+  const { gamer } = useGamerStore((state) => state);
   const [{ nickname, password }, setForm] = React.useState<{
     nickname: string;
     password: string;
@@ -27,12 +29,22 @@ const Login: React.FC<Props> = ({}) => {
     };
   }, [data, router]);
 
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!gamer?.loggedIn) {
+      router.replace("/");
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [router, gamer]);
+
   return (
     <div className={styles.login}>
       <div className={styles.login__left}>
         <CForm onSubmit={onSubmit}>
           <h1>blackjack</h1>
-          <CImage src="/logo.png" />
+          <CImage src="/logo.png" alt="logo" />
           <h2>Welcome back to the games!!</h2>
           <CFormInput
             type="text"

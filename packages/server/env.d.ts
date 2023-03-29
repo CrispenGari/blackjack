@@ -3,6 +3,7 @@
   declare namespace NodeJS {
     export interface ProcessEnv {
       JWT_SECRETE : string;
+			COOKIE_SECRETE : string;
 
     }
   }
