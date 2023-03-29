@@ -1,0 +1,94 @@
+.register {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(to right, var(--main), var(--secondary));
+}
+.register__left,
+.register__right {
+  flex: 1;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.register__left > form {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  user-select: none;
+  user-zoom: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+.register__left > form > button {
+  background-color: var(--secondary) !important;
+  color: white;
+  transition: all 1s;
+  outline: none !important;
+  border: none !important;
+  max-width: 200px !important;
+  width: 100%;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.register__left > form > img {
+  width: 100px;
+  margin-bottom: 30px;
+  -webkit-user-drag: none;
+}
+.register__left > form > h2,
+.register__right > h2 {
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+}
+.register__right > h1 {
+  margin: 10px 0;
+  display: flex;
+  width: 100%;
+  font-size: 1rem;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.register__right > h1 > span {
+  flex: 1;
+  border-bottom: 1px solid white;
+  margin-left: 10px;
+}
+.register__left__input {
+  margin-bottom: 10px;
+}
+
+.register__right > button {
+  background-color: var(--primary) !important;
+  color: white;
+  transition: all 1s;
+  outline: none !important;
+  border: none !important;
+  max-width: 200px !important;
+  width: 100%;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+
+.register__alert {
+  width: 100% !important;
+}
+@media only screen and (max-width: 768px) {
+  .register {
+    flex-direction: column;
+  }
+  .register__right > p,
+  .register__right > h2 {
+    display: none;
+  }
+  .register__left {
+    flex: 2;
+  }
+}

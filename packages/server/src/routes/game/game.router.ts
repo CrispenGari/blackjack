@@ -1,13 +1,59 @@
 import { CARDS } from "../../constants";
 import {
   CardType,
+  createGameEnvironmentSchema,
   gameSchema,
+  joinGameSpaceSchema,
   startGameSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
 import { shareCards, shuffle } from "../../utils";
 import { v4 as uuid_v4 } from "uuid";
+
+const gameEngines = [];
 export const gameRouter = router({
+  createGameEngine: publicProcedure
+    .input(createGameEnvironmentSchema)
+    .mutation(({ input: { creator } }) => {
+      if (creator.nickname.length < 3)
+        return {
+          error: {
+            field: "nickname",
+            message: "nickname is too short.",
+          },
+        };
+      const gameEngine = {
+        id: uuid_v4(),
+        players: [
+          {
+            playerId: uuid_v4(),
+            nickname: creator.nickname,
+            total: 0,
+            cards: [],
+          },
+        ],
+      };
+      gameEngines.push(gameEngine);
+      return {
+        gameEngine,
+      };
+    }),
+  joinGameSpace: publicProcedure.input(joinGameSpaceSchema).mutation(
+    ({
+      input: {
+        gammer: { engineId, nickname },
+      },
+    }) => {
+      if (nickname.length < 3)
+        return {
+          error: {
+            field: "nickname",
+            message: "nickname is too short.",
+          },
+        };
+    }
+  ),
+
   pickCard: publicProcedure.mutation(() => true),
   play: publicProcedure.mutation(() => true),
   startGame: publicProcedure

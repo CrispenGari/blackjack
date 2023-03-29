@@ -1,12 +1,16 @@
 import "dotenv/config";
 import _ from "node-env-types";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { createContext } from "./context";
+import { createContext as cc } from "./context";
 export { type AppRouter } from "./routes/app.routes";
-import { appRouter } from "./routes/app.routes";
+import { appRouter as ar } from "./routes/app.routes";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import ws from "@fastify/websocket";
+import cookie from "@fastify/cookie";
+
+export const createContext = cc;
+export const appRouter = ar;
 
 _();
 
@@ -25,12 +29,18 @@ const HOST =
 
   fastify.register(cors, {
     credentials: true,
-    origin: "*",
+    origin: ["http://localhost:3000", "http://localhost:3002"],
+  });
+  fastify.register(cookie, {
+    secret: "my-secrete",
+    parseOptions: {
+      httpOnly: true,
+    },
   });
   fastify.register(ws);
   fastify.register(fastifyTRPCPlugin, {
     prefix: "/api/trpc",
-    trpcOptions: { router: appRouter, createContext },
+    trpcOptions: { router: ar, createContext: cc },
     useWSS: true,
   });
 

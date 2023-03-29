@@ -1,0 +1,36 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model Gamer{
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  nickname String @unique
+
+  password String
+
+  loggedIn Boolean @default(false)
+
+  engine   Engine? @relation(fields: [engineId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  engineId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Engine{
+   id       String    @id @default(auto()) @map("_id") @db.ObjectId
+   name String @unique
+
+
+   gamers Gamer[]
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+}

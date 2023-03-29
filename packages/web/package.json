@@ -11,6 +11,8 @@
   "dependencies": {
     "@blackjack/server": "1.0.0",
     "@blackjack/shared": "1.0.0",
+    "@coreui/coreui": "^4.2.6",
+    "@coreui/react": "^4.7.0",
     "@tanstack/react-query": "^4.24.4",
     "@trpc/client": "^10.10.0",
     "@trpc/react-query": "^10.10.0",
@@ -23,6 +25,7 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "typescript": "5.0.2",
     "ws": "^8.13.0"
   }

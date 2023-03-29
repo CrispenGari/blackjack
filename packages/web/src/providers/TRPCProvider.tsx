@@ -35,6 +35,12 @@ const getEndingLink = () => {
     true: wsLink<AppRouter>({ client }),
     false: httpBatchLink({
       url: `http://localhost:3001/api/trpc`,
+      fetch(url, options) {
+        return fetch(url, {
+          ...options,
+          credentials: "include",
+        });
+      },
       headers: async () => {
         const token = "";
         return token

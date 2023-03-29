@@ -1,4 +1,65 @@
 .home {
   width: 100vw;
   height: 100vh;
+  background-color: var(--main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.home > form {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  background-color: var(--primary);
+  border-radius: 5px;
+  user-select: none;
+  user-zoom: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.home > form > button {
+  background-color: var(--secondary) !important;
+  color: white;
+  transition: all 1s;
+  outline: none !important;
+  border: none !important;
+  max-width: 200px !important;
+  width: 100%;
+  margin-top: 20px;
+  align-self: flex-start;
+}
+.home > form > button:hover {
+  color: white !important;
+}
+.home > form > h1 {
+  background-image: linear-gradient(
+    to right,
+    var(--tertiary),
+    var(--secondary)
+  );
+  color: transparent;
+  background-clip: text;
+  -moz-background-clip: text;
+  font-size: 1.3rem;
+}
+.home > form > img {
+  width: 100px;
+  -webkit-user-drag: none;
+}
+.home > form > h2 {
+  color: white;
+  font-size: 1rem;
+}
+.home__alert {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+@media only screen and (max-width: 768px) {
+  .home > form {
+    background-color: transparent;
+  }
 }
