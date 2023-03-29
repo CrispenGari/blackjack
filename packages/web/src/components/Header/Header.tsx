@@ -23,7 +23,9 @@ const Header: React.FC<Props> = ({}) => {
     <div className={styles.header}>
       <CImage src="/logo.png" alt="logo" />
       <div className={styles.header__right}>
-        <CButton onClick={logout}>Sign Out</CButton>
+        <CButton onClick={logout} disabled={isLoading}>
+          Sign Out
+        </CButton>
       </div>
     </div>
   );
