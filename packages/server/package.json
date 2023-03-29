@@ -1,0 +1,31 @@
+{
+  "name": "@blackjack/server",
+  "version": "1.0.0",
+  "description": "this is the backend server for the blackjack online game",
+  "main": "src/server.ts",
+  "author": "CrispenGari",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node-dev --respawn --transpile-only src/server.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.1",
+    "@fastify/websocket": "^7.2.0",
+    "@trpc/server": "^10.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.15.0",
+    "node-env-types": "^1.0.6",
+    "superjson": "^1.12.2",
+    "trpc-playground": "^1.0.4",
+    "uuid": "^9.0.0",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/node": "^18.15.10",
+    "@types/uuid": "^9.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.2"
+  }
+}

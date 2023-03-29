@@ -1,0 +1,12 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  --main: #395144;
+  --primary: #4e6c50;
+  --secondary: #aa8b56;
+  --tertiary: #f0ebce;
+}
