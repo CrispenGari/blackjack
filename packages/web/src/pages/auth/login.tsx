@@ -40,7 +40,7 @@ const Login: React.FC<Props> = ({}) => {
   }, [router, gamer]);
 
   return (
-    <div className={styles.login}>
+    <div className={styles.login} >
       <div className={styles.login__left}>
         <CForm onSubmit={onSubmit}>
           <h1>blackjack</h1>

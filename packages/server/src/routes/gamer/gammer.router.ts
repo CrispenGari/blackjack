@@ -8,8 +8,9 @@ import { serialize } from "cookie";
 import bcrypt from "bcryptjs";
 import { signJwt, verifyJwt } from "../../utils";
 import { Events, __cookieMaxAge__, __cookieName__ } from "../../constants";
-import { observable } from "@trpc/server/dist/observable";
+import { observable } from "@trpc/server/observable";
 import EventEmitter from "events";
+import { Gamer } from "@prisma/client";
 
 const ee = new EventEmitter({
   captureRejections: true,
@@ -18,12 +19,11 @@ export const gamerRouter = router({
   onAuthStateChange: publicProcedure
     .input(onAuthStateChangeSchema)
     .subscription(({ input: { gamerId } }) => {
-      return observable<{ jwt: string } | null>((emit) => {
-        const handleEvent = async (user: any) => {
-          if (!!user) {
-            if (user.duid === gamerId) {
-              const jwt = await signJwt(user);
-              emit.next(user.isLoggedIn ? { jwt } : { jwt: "" });
+      return observable<{ gamer: Gamer } | null>((emit) => {
+        const handleEvent = async (gamer: Gamer) => {
+          if (!!gamer) {
+            if (gamer.id === gamerId) {
+              emit.next({ gamer: gamer });
             }
           }
         };

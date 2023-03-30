@@ -1,0 +1,69 @@
+.game {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  aspect-ratio: 1;
+  background-color: var(--main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  user-select: none;
+  user-zoom: none;
+  margin: 5px;
+  transition: all 1s;
+  padding: 10px;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.game:hover {
+  transform: scale(1.02);
+}
+.game > h1 {
+  color: white;
+  font-size: 1rem;
+  margin: 0 !important;
+}
+.game > p {
+  color: white;
+  font-size: 0.7rem;
+  margin: 0 !important;
+}
+.game > img {
+  -webkit-user-drag: none;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 5px;
+}
+.game__full,
+.game__active {
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  border-radius: 50%;
+  transition: all 1s ease;
+  position: absolute;
+  top: 5px;
+}
+.game__full {
+  background-color: red;
+  left: 5px;
+  animation: ripple 1s ease 0s infinite alternate-reverse forwards;
+}
+.game__active {
+  right: 5px;
+  background-color: var(--secondary);
+  animation: ripple 1s ease 0.5s infinite alternate-reverse forwards;
+}
+
+@keyframes ripple {
+  from {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+}
