@@ -2,13 +2,16 @@ import "dotenv/config";
 import _ from "node-env-types";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 export { type AppRouter } from "./routes/app.routes";
+export { type GamePayLoadType as EnvironmentType } from "./routes/game/game.router";
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import ws from "@fastify/websocket";
 import cookie from "@fastify/cookie";
 import { createContext } from "./context";
 import { appRouter } from "./routes/app.routes";
-
+export { type CardType } from "./schema/game/game.schema";
+export { Engine, Message, Gamer } from "@prisma/client";
 _();
 
 const PORT: any = process.env.PORT || 3001;

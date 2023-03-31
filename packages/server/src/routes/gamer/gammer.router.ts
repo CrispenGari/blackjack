@@ -35,6 +35,7 @@ export const gamerRouter = router({
     }),
   gamer: publicProcedure.query(async ({ ctx: { prisma, req } }) => {
     const jwt = req.cookies[__cookieName__];
+
     if (!!!jwt) return { gamer: null };
     try {
       const payload = await verifyJwt(jwt);

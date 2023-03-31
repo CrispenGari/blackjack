@@ -4,6 +4,8 @@ export const __cookieMaxAge__: number = 1000 * 60 * 60 * 24 * 7; // 7 days
 export enum Events {
   ON_AUTH_STATE_CHANGED = "ON_AUTH_STATE_CHANGED",
   ON_ENGINES_STATE_CHANGE = "ON_ENGINES_STATE_CHANGE",
+  ON_ENGINE_STATE_CHANGE = "ON_ENGINE_STATE_CHANGE",
+  ON_GAME_STATE_CHANGE = "ON_GAME_STATE_CHANGE",
 }
 
 export const CARDS = [

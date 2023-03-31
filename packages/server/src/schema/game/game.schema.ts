@@ -6,29 +6,30 @@ export const cardSchema = z.object({
   value: z.string(),
 });
 export const playerSchema = z.object({
-  playerId: z.string(),
-  nickname: z.string(),
-  cards: z.array(cardSchema),
+  password: z.string(),
   total: z.number(),
-  isCreator: z.boolean().default(false),
+  cards: z.array(cardSchema),
+  id: z.string(),
+  nickname: z.string(),
+  loggedIn: z.boolean(),
+  enginesIds: z.array(z.string()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const updateGameEnvironmentSchema = z.object({
+  engineId: z.string(),
+  blackJack: z.string(),
+  played: z.array(cardSchema),
+  players: z.array(playerSchema),
 });
 
 export const startGameSchema = z.object({
-  players: z.array(z.object({ nickname: z.string() })),
+  engineId: z.string(),
   blackJack: z.string(), // J_OF_CLUBS // J_OF_SPADES
 });
 
-export const gameSchema = z.object({
-  players: z.array(playerSchema),
-  blackJack: z.string(),
-});
-
-export const createGameEnvironmentSchema = z.object({
-  creator: z.object({ nickname: z.string() }),
-});
-
-export const joinGameSpaceSchema = z.object({
-  gammer: z.object({ nickname: z.string(), engineId: z.string() }),
+export const onGameStateChangedSchema = z.object({
+  engineId: z.string(),
 });
 
 export type CardType = z.TypeOf<typeof cardSchema>;

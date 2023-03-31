@@ -2,13 +2,76 @@ import { Engine } from "@prisma/client";
 import { observable } from "@trpc/server/observable";
 import EventEmitter from "events";
 import { Events, __cookieName__ } from "../../constants";
-import { createEngineSchema } from "../../schema/engine/engine.schema";
+import {
+  createEngineSchema,
+  engineSchema,
+  joinEngineSchema,
+  onEngineStateChangedSchema,
+} from "../../schema/engine/engine.schema";
 import { publicProcedure, router } from "../../trpc";
 import { verifyJwt } from "../../utils";
 const ee = new EventEmitter({
   captureRejections: true,
 });
 export const engineRouter = router({
+  joinEngine: publicProcedure
+    .input(joinEngineSchema)
+    .mutation(async ({ ctx: { prisma, req }, input: { engineId } }) => {
+      const jwt = req.cookies[__cookieName__];
+      if (!!!jwt)
+        return {
+          error: {
+            field: "token",
+            message: "you are not authenticated to join a game engine.",
+          },
+        };
+      try {
+        const payload = await verifyJwt(jwt);
+        const gamer = await prisma.gamer.findFirst({
+          where: { id: payload.id },
+        });
+        if (!!!gamer)
+          return {
+            error: {
+              field: "gammer",
+              message:
+                "unable to join a game engine because you are not authenticated.",
+            },
+          };
+        const engine = await prisma.engine.findFirst({
+          where: { id: engineId },
+        });
+        if (!!!engine)
+          return {
+            error: {
+              message:
+                "enable to find the game engine/environment it might have been deleted.",
+              field: "engine",
+            },
+          };
+
+        const _engine = await prisma.engine.update({
+          where: { id: engine.id },
+          data: {
+            gamers: { connect: { id: gamer.id } },
+          },
+        });
+        const engines = await prisma.engine.findMany({});
+        ee.emit(Events.ON_ENGINE_STATE_CHANGE, _engine);
+        ee.emit(Events.ON_ENGINES_STATE_CHANGE, engines);
+        return {
+          engine,
+        };
+      } catch (error) {
+        return {
+          error: {
+            field: "server",
+            message:
+              "something went wrong on the server, would you mind try again the action",
+          },
+        };
+      }
+    }),
   createEngine: publicProcedure
     .input(createEngineSchema)
     .mutation(async ({ ctx: { req, prisma }, input: { name } }) => {
@@ -98,12 +161,26 @@ export const engineRouter = router({
       }
     }),
   engines: publicProcedure.query(async ({ ctx: { prisma } }) => {
-    const engines = await prisma.engine.findMany({});
+    const engines = await prisma.engine.findMany({
+      include: { gamers: true },
+    });
     return {
       engines,
       total: engines.length,
     };
   }),
+  engine: publicProcedure
+    .input(engineSchema)
+    .query(async ({ ctx: { prisma }, input: { engineId } }) => {
+      if (!!!engineId) return { engine: null };
+      const engine = await prisma.engine.findFirst({
+        where: { id: engineId },
+        include: { gamers: true, messages: { include: { sender: true } } },
+      });
+      return {
+        engine,
+      };
+    }),
   onEnginesStateChanged: publicProcedure.subscription(() => {
     return observable<Array<Engine>>((emit) => {
       const handleEvent = async (engines: Engine[]) => {
@@ -116,4 +193,19 @@ export const engineRouter = router({
       };
     });
   }),
+  onEngineStateChanged: publicProcedure
+    .input(onEngineStateChangedSchema)
+    .subscription(({ input: { engineId } }) => {
+      return observable<Engine>((emit) => {
+        const handleEvent = async (engine: Engine) => {
+          if (engineId === engine.id) {
+            emit.next(engine);
+          }
+        };
+        ee.on(Events.ON_ENGINE_STATE_CHANGE, handleEvent);
+        return () => {
+          ee.off(Events.ON_ENGINE_STATE_CHANGE, handleEvent);
+        };
+      });
+    }),
 });
