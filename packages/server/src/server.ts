@@ -10,7 +10,7 @@ import ws from "@fastify/websocket";
 import cookie from "@fastify/cookie";
 import { createContext } from "./context";
 import { appRouter } from "./routes/app.routes";
-export { type CardType, type PlayerType } from "./schema/game/game.schema";
+export { type CardType } from "./schema/game/game.schema";
 export { Engine, Message, Gamer } from "@prisma/client";
 _();
 

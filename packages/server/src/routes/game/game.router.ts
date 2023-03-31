@@ -81,7 +81,7 @@ export const gameRouter = router({
         blackJack,
         players: gamePlayers,
         played: [],
-        lastPlayer: null,
+        lastPlayer: "",
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
       ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);

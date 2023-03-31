@@ -1,4 +1,4 @@
-import { CardType, EnvironmentType, PlayerType } from "@blackjack/server";
+import { CardType, EnvironmentType } from "@blackjack/server";
 import { create } from "zustand";
 
 type GamerType = {
@@ -22,13 +22,12 @@ export const useGamerStore = create<{
 export const useEnvironmentStore = create<{
   environment: EnvironmentType | null;
   setEnvironment: (env: EnvironmentType) => void;
-  matchCards: (cards: CardType[], gamerId: string) => void;
+  matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) => void;
 }>((set) => ({
   environment: null,
   setEnvironment: (env: EnvironmentType) => set({ environment: env }),
-  matchCards: (cards: CardType[], p: Partial<PlayerType>) =>
+  matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) =>
     set((basket) => {
-      console.log({ p });
       if (!!basket.environment) {
         const unique = [
           ...new Map(
@@ -42,10 +41,10 @@ export const useEnvironmentStore = create<{
           ...basket,
           environment: {
             ...basket.environment,
-            // lastPlayer: null,
+            lastPlayer: lastPlayer,
             played: unique,
             players: basket.environment.players.map((player) => {
-              if (player.id === p.id) {
+              if (player.id === gamerId) {
                 // it's your cards
                 const cardIds: string[] = cards.map((c) => c.id);
                 return {

@@ -28,6 +28,16 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
     await mutate({ engineId: engine.id, blackJack: jack.id });
   };
 
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!data?.blackJack) {
+      setOpen(false);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [data, setOpen]);
+
   return (
     <CModal
       visible={open}

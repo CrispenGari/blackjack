@@ -45,8 +45,8 @@ const Card: React.FC<Props> = ({ card, show, setPair, pair }) => {
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted && matched && !!gamer?.id) {
-      matchCards(played, gamer as any);
+    if (mounted && matched && !!gamer?.id && !!gamer.nickname) {
+      matchCards(played, gamer.id as string, gamer.nickname);
     }
     return () => {
       mounted = false;

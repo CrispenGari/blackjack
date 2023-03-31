@@ -24,15 +24,19 @@ const Environment: React.FC<Props> = ({ engine }) => {
     (player) => player.id !== gamer?.id
   );
 
-  console.log({ environment });
+  console.log({ opponents });
 
   return (
     <div className={styles.environment}>
       <StartGameModal engine={engine} open={open} setOpen={setOpen} />
       <div className={styles.environment__top}>
         <div className={styles.environment__top__left}>
-          {opponents?.length === 1 && <Player player={opponents[0]} />}
-          {opponents?.length === 3 && <Player player={opponents[2]} />}
+          {opponents?.length && opponents.length >= 1 && (
+            <Player player={opponents[0]} />
+          )}
+          {opponents?.length && opponents.length >= 3 && (
+            <Player player={opponents[2]} />
+          )}
         </div>
         <div className={styles.environment__top__center}>
           {engine.adminId === gamer?.id ? (
@@ -71,11 +75,23 @@ const Environment: React.FC<Props> = ({ engine }) => {
               ))
             )}
           </div>
-          <p>user last to play</p>
+          <p>
+            {environment?.lastPlayer === ""
+              ? "you can play first."
+              : `${
+                  environment?.lastPlayer === gamer?.nickname
+                    ? "you are the last to play"
+                    : `${environment?.lastPlayer || ""} is the last one played.`
+                } `}
+          </p>
         </div>
         <div className={styles.environment__top__right}>
-          {opponents?.length === 2 && <Player player={opponents[1]} />}
-          {opponents?.length === 4 && <Player player={opponents[3]} />}
+          {opponents?.length && opponents.length >= 2 && (
+            <Player player={opponents![1]} />
+          )}
+          {opponents?.length && opponents.length >= 4 && (
+            <Player player={opponents[3]} />
+          )}
         </div>
       </div>
       <div className={styles.environment__bottom}>
