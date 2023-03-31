@@ -1,0 +1,24 @@
+.card,
+.card__anonymous {
+  padding: 2px;
+  width: 70px;
+  border-radius: 2px;
+  border: 1px solid var(--main);
+  margin: 2px;
+  transition: all 1s ease;
+  cursor: pointer;
+  height: fit-content !important;
+  flex-grow: 0;
+}
+.card__anonymous {
+  width: 35px;
+}
+.card > img,
+.card__anonymous > img {
+  width: 100%;
+  -webkit-user-drag: none;
+}
+.card:hover,
+.card__anonymous:hover {
+  transform: scale(1.03);
+}

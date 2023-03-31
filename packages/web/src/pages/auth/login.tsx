@@ -7,7 +7,8 @@ import { useGamerStore } from "@/store";
 interface Props {}
 const Login: React.FC<Props> = ({}) => {
   const router = useRouter();
-  const { gamer } = useGamerStore((state) => state);
+  const { data: gamer } = trpc.gamer.gamer.useQuery();
+  const { setGamer, gamer: g } = useGamerStore((state) => state);
   const [{ nickname, password }, setForm] = React.useState<{
     nickname: string;
     password: string;
@@ -21,26 +22,26 @@ const Login: React.FC<Props> = ({}) => {
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted && !!data?.gamer) {
+    if (mounted && !!g) {
       router.replace("/");
     }
     return () => {
       mounted = false;
     };
-  }, [data, router]);
+  }, [g, router]);
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted && !!gamer?.loggedIn) {
-      router.replace("/");
+    if (mounted) {
+      setGamer(gamer?.gamer || null);
     }
     return () => {
       mounted = false;
     };
-  }, [router, gamer]);
+  }, [gamer, setGamer]);
 
   return (
-    <div className={styles.login} >
+    <div className={styles.login}>
       <div className={styles.login__left}>
         <CForm onSubmit={onSubmit}>
           <h1>blackjack</h1>

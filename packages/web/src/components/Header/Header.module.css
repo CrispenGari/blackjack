@@ -12,6 +12,7 @@
   user-select: none !important;
   -webkit-user-drag: none !important;
   user-zoom: none;
+  cursor: pointer;
 }
 .header__right > button {
   background-color: var(--secondary) !important;

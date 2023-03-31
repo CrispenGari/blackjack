@@ -1,28 +1,28 @@
-.new__game__modal__header,
-.new__game__modal__body,
-.new__game__modal__footer {
+.game__engine__modal__header,
+.game__engine__modal__body,
+.game__engine__modal__footer {
   background-color: var(--secondary) !important;
   color: white;
 }
 
-.new__game__modal__close__btn,
-.new__game__modal__create__btn {
+.game__engine__modal__close__btn,
+.game__engine__modal__create__btn {
   width: 100px !important;
   transition: all 1s ease;
   border: none !important;
   outline: none !important;
 }
 
-.new__game__modal__create__btn:hover,
-.new__game__modal__close__btn:hover {
+.game__engine__modal__create__btn:hover,
+.game__engine__modal__close__btn:hover {
   background-color: var(--main) !important;
   color: white !important;
 }
 
-.new__game__modal__create__btn {
+.game__engine__modal__create__btn {
   background-color: var(--main) !important;
 }
 
-.new__game__modal__close__btn {
+.game__engine__modal__close__btn {
   background-color: var(--tertiary) !important;
 }

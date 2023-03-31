@@ -76,11 +76,12 @@ export const gameRouter = router({
           playing: true,
         },
       });
-      const payload = {
+      const payload: GamePayLoadType = {
         engineId: engine.id,
         blackJack,
         players: gamePlayers,
         played: [],
+        lastPlayer: null,
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
       ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);

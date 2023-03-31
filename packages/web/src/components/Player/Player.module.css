@@ -1,0 +1,21 @@
+.player {
+  flex: 1 !important;
+  border-bottom: 1px solid var(--main);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+.player > h1 {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.player > p {
+  color: gray;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+.player__cards {
+  display: flex;
+  flex-wrap: wrap;
+}

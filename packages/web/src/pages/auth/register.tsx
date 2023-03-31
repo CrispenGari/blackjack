@@ -8,7 +8,8 @@ import { useGamerStore } from "@/store";
 interface Props {}
 const Register: React.FC<Props> = ({}) => {
   const router = useRouter();
-  const { gamer } = useGamerStore((state) => state);
+  const { data: gamer } = trpc.gamer.gamer.useQuery();
+  const { setGamer, gamer: g } = useGamerStore((state) => state);
   const [{ nickname, password, confirmPassword }, setForm] = React.useState<{
     nickname: string;
     password: string;
@@ -25,25 +26,26 @@ const Register: React.FC<Props> = ({}) => {
       web: true,
     });
   };
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!data?.gamer) {
-      router.replace("/");
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [data, router]);
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted && !!gamer?.loggedIn) {
+    if (mounted && !!g) {
       router.replace("/");
     }
     return () => {
       mounted = false;
     };
-  }, [router, gamer]);
+  }, [g, router]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted) {
+      setGamer(gamer?.gamer || null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [gamer, setGamer]);
 
   return (
     <div className={styles.register}>

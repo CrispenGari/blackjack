@@ -1,14 +1,95 @@
+import { useEnvironmentStore, useGamerStore } from "@/store";
+import { CardType, Engine, Gamer, Message } from "@blackjack/server";
+import { CButton, CImage } from "@coreui/react";
 import React from "react";
+import Card from "../Card/Card";
+import Player from "../Player/Player";
+import StartGameModal from "../StartGameModal/StartGameModal";
 import styles from "./Environment.module.css";
-interface Props {}
-const Environment: React.FC<Props> = ({}) => {
+interface Props {
+  engine: Engine & {
+    messages: (Message & {
+      sender: Gamer;
+    })[];
+    gamers: Gamer[];
+  };
+}
+const Environment: React.FC<Props> = ({ engine }) => {
+  const { gamer } = useGamerStore((state) => state);
+  const [pair, setPair] = React.useState<CardType[]>([]);
+  const { environment } = useEnvironmentStore((state) => state);
+  const [open, setOpen] = React.useState<boolean>(false);
+
+  const opponents = environment?.players.filter(
+    (player) => player.id !== gamer?.id
+  );
+
+  console.log({ environment });
+
   return (
     <div className={styles.environment}>
-      <div className={styles.environment__header}>
-        <h1>Header</h1>
+      <StartGameModal engine={engine} open={open} setOpen={setOpen} />
+      <div className={styles.environment__top}>
+        <div className={styles.environment__top__left}>
+          {opponents?.length === 1 && <Player player={opponents[0]} />}
+          {opponents?.length === 3 && <Player player={opponents[2]} />}
+        </div>
+        <div className={styles.environment__top__center}>
+          {engine.adminId === gamer?.id ? (
+            <CButton
+              onClick={() => setOpen(true)}
+              // disabled={engine.playing}
+            >
+              Start
+            </CButton>
+          ) : engine.playing ? (
+            <p>the game has started</p>
+          ) : (
+            <p>Only the admin of the environment can start the game.</p>
+          )}
+          <div className={styles.environment__top__center__cards}>
+            {!!!environment?.played.length ? (
+              <>
+                <div className={styles.environment__top__center__card}>
+                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                </div>
+                <div className={styles.environment__top__center__card}>
+                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                </div>
+                <div className={styles.environment__top__center__card}>
+                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                </div>
+              </>
+            ) : (
+              environment.played.map((card, id) => (
+                <div key={id} className={styles.environment__top__center__card}>
+                  <CImage
+                    alt="card"
+                    src={`/cards/svg/${card.id.toLowerCase()}.svg`}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+          <p>user last to play</p>
+        </div>
+        <div className={styles.environment__top__right}>
+          {opponents?.length === 2 && <Player player={opponents[1]} />}
+          {opponents?.length === 4 && <Player player={opponents[3]} />}
+        </div>
       </div>
-      <div className={styles.environment__main}>
-        <h1>Main</h1>
+      <div className={styles.environment__bottom}>
+        {environment?.players
+          .find((player) => player.id === gamer?.id)
+          ?.cards.map((card, index) => (
+            <Card
+              show={true}
+              card={card}
+              key={index}
+              pair={pair}
+              setPair={setPair}
+            />
+          ))}
       </div>
     </div>
   );

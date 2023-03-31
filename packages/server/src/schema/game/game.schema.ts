@@ -21,6 +21,7 @@ export const updateGameEnvironmentSchema = z.object({
   blackJack: z.string(),
   played: z.array(cardSchema),
   players: z.array(playerSchema),
+  lastPlayer: z.nullable(playerSchema),
 });
 
 export const startGameSchema = z.object({
@@ -33,3 +34,4 @@ export const onGameStateChangedSchema = z.object({
 });
 
 export type CardType = z.TypeOf<typeof cardSchema>;
+export type PlayerType = z.TypeOf<typeof playerSchema>;

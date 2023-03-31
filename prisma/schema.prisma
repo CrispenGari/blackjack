@@ -28,9 +28,11 @@ model Gamer{
 
 model Engine{
    id       String    @id @default(auto()) @map("_id") @db.ObjectId
+
    name String @unique
    active Boolean @default(false)
    full Boolean @default(false)
+   playing Boolean @default(false)
 
    adminId String @db.ObjectId @unique
 

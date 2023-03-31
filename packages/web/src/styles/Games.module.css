@@ -92,9 +92,7 @@
   display: flex;
   padding: 10px;
   justify-content: space-around;
-  /* padding: 20px;
-  overflow-y: scroll;
-  flex: 1; */
+
   flex-wrap: wrap;
 }
 

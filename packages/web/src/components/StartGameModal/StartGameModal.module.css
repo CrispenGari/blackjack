@@ -1,0 +1,71 @@
+.start__game__modal__header,
+.start__game__modal__body,
+.start__game__modal__footer {
+  background-color: var(--secondary) !important;
+  color: white;
+}
+
+.start__game__modal__close__btn,
+.start__game__modal__create__btn {
+  min-width: 100px !important;
+  transition: all 1s ease;
+  border: none !important;
+  outline: none !important;
+}
+.start__game__modal__create__btn {
+  background-color: var(--primary) !important;
+}
+.start__game__modal__create__btn:hover,
+.start__game__modal__close__btn:hover {
+  background-color: var(--main) !important;
+  color: white !important;
+}
+
+.start__game__modal__close__btn {
+  background-color: var(--tertiary) !important;
+}
+
+.start__game__modal__body > h1 {
+  font-size: 1rem;
+}
+.start__game__modal__body > h2 {
+  font-size: 1rem;
+}
+
+.start__game__modal__body__jacks {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.start__game__modal__body__jack,
+.start__game__modal__body__jack__active {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px !important;
+  user-select: none;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: var(--main);
+  transition: all 1s ease;
+  border: 1px solid transparent;
+}
+.start__game__modal__body__jack {
+  background-color: transparent !important;
+  border: 1px solid var(--main);
+}
+.start__game__modal__body__jack:hover,
+.start__game__modal__body__jack__active:hover {
+  border: 1px solid var(--main);
+  transform: scale(1.05);
+}
+.start__game__modal__body__jack > img,
+.start__game__modal__body__jack__active > img {
+  width: 100px;
+  -webkit-user-drag: none;
+}
+.start__game__modal__body__jack > h3,
+.start__game__modal__body__jack__active > h3 {
+  font-size: 0.9rem;
+  margin-top: 5px;
+}

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import styles from "@/styles/Games.module.css";
-import { Header, NewGameModal } from "@/components";
+import { Header, NewGameModal, Game } from "@/components";
 import { useRouter } from "next/router";
 import { useGamerStore } from "@/store";
-import Game from "@/components/Game/Game";
 import { CButton, CImage } from "@coreui/react";
 import { trpc } from "@/utils/trpc";
 interface Props {}
@@ -62,7 +61,9 @@ const Games: React.FC<Props> = ({}) => {
                 </CButton>
               </>
             ) : (
-              data?.engines.map((engine) => <Game key={engine.id} />)
+              data?.engines.map((engine) => (
+                <Game key={engine.id} engine={engine} />
+              ))
             )}
           </div>
         )}
