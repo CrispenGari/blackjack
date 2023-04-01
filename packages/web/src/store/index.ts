@@ -22,10 +22,45 @@ export const useGamerStore = create<{
 export const useEnvironmentStore = create<{
   environment: EnvironmentType | null;
   setEnvironment: (env: EnvironmentType) => void;
+  pickCard: (card: CardType, gamerId: string, myId: string) => void;
   matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) => void;
 }>((set) => ({
   environment: null,
   setEnvironment: (env: EnvironmentType) => set({ environment: env }),
+  pickCard: (card: CardType, gamerId: string, myId: string) =>
+    set((basket) => {
+      if (!!basket.environment) {
+        return {
+          ...basket,
+          environment: {
+            ...basket.environment,
+
+            players: [
+              ...basket.environment?.players.map((player) => {
+                if (player.id === gamerId) {
+                  // removing the card from a player
+                  return {
+                    ...player,
+                    cards: player.cards.filter((c) => card.id !== c.id),
+                  };
+                }
+                if (player.id === myId) {
+                  // adding a card to a player
+                  return {
+                    ...player,
+                    cards: [card, ...player.cards],
+                  };
+                }
+                return {
+                  ...player,
+                };
+              }),
+            ],
+          },
+        };
+      }
+      return {};
+    }),
   matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) =>
     set((basket) => {
       if (!!basket.environment) {

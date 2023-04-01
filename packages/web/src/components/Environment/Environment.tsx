@@ -24,8 +24,6 @@ const Environment: React.FC<Props> = ({ engine }) => {
     (player) => player.id !== gamer?.id
   );
 
-  console.log({ opponents });
-
   return (
     <div className={styles.environment}>
       <StartGameModal engine={engine} open={open} setOpen={setOpen} />
@@ -87,7 +85,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
         </div>
         <div className={styles.environment__top__right}>
           {opponents?.length && opponents.length >= 2 && (
-            <Player player={opponents![1]} />
+            <Player player={opponents[1]} />
           )}
           {opponents?.length && opponents.length >= 4 && (
             <Player player={opponents[3]} />

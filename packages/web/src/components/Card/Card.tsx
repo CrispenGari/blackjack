@@ -10,8 +10,9 @@ interface Props {
   show: boolean;
   setPair?: React.Dispatch<React.SetStateAction<CardType[]>>;
   pair?: CardType[];
+  onClick?: () => void;
 }
-const Card: React.FC<Props> = ({ card, show, setPair, pair }) => {
+const Card: React.FC<Props> = ({ card, show, setPair, pair, onClick }) => {
   const { isLoading, data, mutate } =
     trpc.game.updateGameEnvironment.useMutation();
   const [matched, setMatched] = React.useState<boolean>(false);
@@ -23,8 +24,6 @@ const Card: React.FC<Props> = ({ card, show, setPair, pair }) => {
     if (restricted.includes(card.id)) return;
     setPair!((state) => [...state, card]);
   };
-
-  const pickCard = async () => {};
 
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -65,15 +64,17 @@ const Card: React.FC<Props> = ({ card, show, setPair, pair }) => {
     };
   }, [environment, mutate, matched]);
 
-  // console.log({ environment });
-
   return (
     <div
       role={"button"}
       className={show ? styles.card : styles.card__anonymous}
       onClick={() => {
         if (isLoading) return;
-        show ? selectCard() : pickCard();
+        if (typeof onClick === "undefined") {
+          selectCard();
+          return;
+        }
+        onClick();
       }}
       style={{
         backgroundColor: !!pair?.find((c) => c.id === card.id)
