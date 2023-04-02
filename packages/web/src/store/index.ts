@@ -20,12 +20,20 @@ export const useGamerStore = create<{
 }));
 
 export const useEnvironmentStore = create<{
+  gamersIds: Array<string>;
   environment: EnvironmentType | null;
   setEnvironment: (env: EnvironmentType) => void;
+  setGamersIds: (gamersIds: Array<string>) => void;
   pickCard: (card: CardType, gamerId: string, myId: string) => void;
   matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) => void;
 }>((set) => ({
   environment: null,
+  gamersIds: [],
+  setGamersIds: (gamersIds: string[]) =>
+    set((basket) => ({
+      ...basket,
+      gamersIds,
+    })),
   setEnvironment: (env: EnvironmentType) => set({ environment: env }),
   pickCard: (card: CardType, gamerId: string, myId: string) =>
     set((basket) => {

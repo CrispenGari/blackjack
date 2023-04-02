@@ -6,6 +6,7 @@ import { CARDS, Events } from "../../constants";
 import {
   CardType,
   onGameStateChangedSchema,
+  onGameStartSchema,
   startGameSchema,
   updateGameEnvironmentSchema,
 } from "../../schema/game/game.schema";
@@ -19,6 +20,21 @@ const ee = new EventEmitter({
 });
 
 export const gameRouter = router({
+  onGameStart: publicProcedure
+    .input(onGameStartSchema)
+    .subscription(({ input: { engineId, gamerId } }) => {
+      return observable<{ message: string }>((emit) => {
+        const handleEvent = async ({ engine }: { engine: Engine }) => {
+          if (engineId === engine.id && engine.adminId !== gamerId) {
+            emit.next({ message: "the game has started." });
+          }
+        };
+        ee.on(Events.ON_GAME_START, handleEvent);
+        return () => {
+          ee.off(Events.ON_GAME_START, handleEvent);
+        };
+      });
+    }),
   pickCard: publicProcedure.mutation(() => true),
   play: publicProcedure.mutation(() => true),
   updateGameEnvironment: publicProcedure
@@ -34,7 +50,6 @@ export const gameRouter = router({
           id: engineId,
         },
         include: {
-          gamers: true,
           messages: {
             include: {
               sender: true,
@@ -47,7 +62,7 @@ export const gameRouter = router({
           error: { field: "engine", message: "Failed to find the engine." },
         };
 
-      const nPlayers: number = engine.gamers.length;
+      const nPlayers: number = engine.gamersIds.length;
       if (nPlayers < 2)
         return {
           error: {
@@ -62,12 +77,22 @@ export const gameRouter = router({
         CARDS.filter((card) => card.id !== unselected)
       );
       const potions = shareCards<CardType>(gameCards, nPlayers);
-      const gamePlayers = engine.gamers.map((gamer, index) => ({
-        ...gamer,
-        password: "<hidden>",
-        total: potions[index].length,
-        cards: potions[index],
-      }));
+      const gamers = await prisma.gamer.findMany({
+        where: { id: { in: engine.gamersIds } },
+      });
+
+      /**
+       * shuffle the game gamers and assign them some numbers.
+       */
+      const gamePlayers = gamers
+        .sort(() => Math.random() - 0.5)
+        .map((gamer, index) => ({
+          ...gamer,
+          password: "<hidden>",
+          total: potions[index].length,
+          cards: potions[index],
+          playerNumber: index + 1,
+        }));
 
       await prisma.engine.update({
         where: { id: engine.id },
@@ -85,6 +110,7 @@ export const gameRouter = router({
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
       ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
+      ee.emit(Events.ON_GAME_START, { engine });
       return {
         blackJack,
         players: gamePlayers,

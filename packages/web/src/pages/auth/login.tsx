@@ -20,15 +20,15 @@ const Login: React.FC<Props> = ({}) => {
     await mutate({ nickname, password, web: true });
   };
 
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!g) {
-      router.replace("/");
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [g, router]);
+  // React.useEffect(() => {
+  //   let mounted: boolean = true;
+  //   if (mounted && !!g) {
+  //     router.replace("/");
+  //   }
+  //   return () => {
+  //     mounted = false;
+  //   };
+  // }, [g, router]);
 
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -38,7 +38,7 @@ const Login: React.FC<Props> = ({}) => {
     return () => {
       mounted = false;
     };
-  }, [gamer, setGamer]);
+  }, [gamer, setGamer, router]);
 
   return (
     <div className={styles.login}>

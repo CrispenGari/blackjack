@@ -4,6 +4,7 @@ export { default as Loading } from "./Loading/Loading";
 export { default as Environment } from "./Environment/Environment";
 export { default as GameChat } from "./GameChat/GameChat";
 export { default as Game } from "./Game/Game";
+export { default as Toast } from "./Toast/Toast";
 export { default as Card } from "./Card/Card";
 export { default as Player } from "./Player/Player";
 export { default as StartGameModal } from "./StartGameModal/StartGameModal";

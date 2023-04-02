@@ -13,6 +13,7 @@ import {
 } from "@coreui/react";
 import React from "react";
 import styles from "./StartGameModal.module.css";
+import { useEnvironmentStore } from "@/store";
 interface Props {
   engine: Engine;
   open: boolean;
@@ -24,8 +25,10 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
     name: string;
     id: string;
   }>(BLACK_JACKS[0]);
+  const { gamersIds } = useEnvironmentStore((s) => s);
   const onSubmit = async () => {
     await mutate({ engineId: engine.id, blackJack: jack.id });
+    // console.log({ gamersIds });
   };
 
   React.useEffect(() => {
@@ -48,7 +51,7 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
         <CModalTitle>Join Game Environment - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.start__game__modal__body}>
-        <h1>{engine.gamersIds.length} more gamers</h1>
+        <h1>{gamersIds.length} more gamers</h1>
         <h2>Select Black Jack</h2>
         <div className={styles.start__game__modal__body__jacks}>
           {BLACK_JACKS.map((_jack) => (

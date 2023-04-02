@@ -24,14 +24,7 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
   const { gamer } = useGamerStore((state) => state);
   const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
   const onSubmit = async () => {
-    if (!!engine.gamersIds.find((i) => i === gamer?.id)) {
-      // automatically join
-      router.push(`/games/game/${engine.id}`);
-    } else {
-      // do some logic to join
-      await mutate({ engineId: engine.id });
-      // router.push(`/games/game/${engine.id}`);
-    }
+    await mutate({ engineId: engine.id });
   };
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -53,7 +46,7 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
         <CModalTitle>Join Game Environment - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.game__engine__modal__body}>
-        <h1>{engine.gamersIds.length} more gamers</h1>
+        <h1>{engine.gamersIds.length} more gamers in the engine.</h1>
         {!!data?.error && (
           <CAlert
             style={{ marginTop: 10, userSelect: "none" }}

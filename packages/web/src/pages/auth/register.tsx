@@ -29,16 +29,6 @@ const Register: React.FC<Props> = ({}) => {
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted && !!g) {
-      router.replace("/");
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [g, router]);
-
-  React.useEffect(() => {
-    let mounted: boolean = true;
     if (mounted) {
       setGamer(gamer?.gamer || null);
     }

@@ -11,7 +11,6 @@ interface Props {
     messages: (Message & {
       sender: Gamer;
     })[];
-    gamers: Gamer[];
   };
 }
 const Environment: React.FC<Props> = ({ engine }) => {
@@ -93,6 +92,10 @@ const Environment: React.FC<Props> = ({ engine }) => {
         </div>
       </div>
       <div className={styles.environment__bottom}>
+        <div className={styles.environment__bottom__player__number}>
+          {environment?.players.find((player) => player.id === gamer?.id)
+            ?.playerNumber || 0}
+        </div>
         {environment?.players
           .find((player) => player.id === gamer?.id)
           ?.cards.map((card, index) => (

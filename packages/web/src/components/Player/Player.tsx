@@ -16,9 +16,9 @@ interface Props {
     id: string;
     nickname: string;
     loggedIn: boolean;
-    enginesIds: string[];
     createdAt: Date;
     updatedAt: Date;
+    playerNumber: number;
   };
 }
 const Player: React.FC<Props> = ({ player }) => {
@@ -49,6 +49,7 @@ const Player: React.FC<Props> = ({ player }) => {
 
   return (
     <div className={styles.player}>
+      <div className={styles.player__number}>{player.playerNumber}</div>
       <h1>{player.nickname}</h1>
       <p>{`${player.nickname}'s turn • got ${player.total} cards • left with ${player.cards.length} cards.`}</p>
       <div className={styles.player__cards}>

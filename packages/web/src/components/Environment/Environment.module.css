@@ -12,6 +12,7 @@
   flex-wrap: wrap;
   flex: 0.4;
   justify-content: space-evenly;
+  position: relative;
 }
 .environment__top__left {
   flex: 2;
@@ -81,4 +82,18 @@
 .environment__top__center__card:nth-child(even) {
   transform: rotate(-45deg);
   transform-origin: start;
+}
+
+.environment__bottom__player__number {
+  width: 30px;
+  display: grid;
+  place-items: center;
+  height: 30px;
+  border-radius: 10px;
+  position: absolute;
+  z-index: 10;
+  color: white;
+  background-color: var(--main);
+  top: 5px;
+  right: 5px;
 }

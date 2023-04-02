@@ -12,9 +12,9 @@ export const playerSchema = z.object({
   id: z.string(),
   nickname: z.string(),
   loggedIn: z.boolean(),
-  enginesIds: z.array(z.string()),
   createdAt: z.date(),
   updatedAt: z.date(),
+  playerNumber: z.number(),
 });
 export const updateGameEnvironmentSchema = z.object({
   engineId: z.string(),
@@ -31,6 +31,10 @@ export const startGameSchema = z.object({
 
 export const onGameStateChangedSchema = z.object({
   engineId: z.string(),
+});
+export const onGameStartSchema = z.object({
+  engineId: z.string(),
+  gamerId: z.string(),
 });
 
 export type CardType = z.TypeOf<typeof cardSchema>;

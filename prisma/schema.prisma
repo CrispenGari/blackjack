@@ -18,8 +18,8 @@ model Gamer{
   loggedIn Boolean @default(false)
 
   messages Message[]
-  enginesIds String[] @db.ObjectId
-  engines   Engine[]   @relation(fields: [enginesIds], references: [id])
+
+  engine Engine?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -34,10 +34,11 @@ model Engine{
    full Boolean @default(false)
    playing Boolean @default(false)
 
-   adminId String @db.ObjectId @unique
+   gamersIds String[]
 
-   gamersIds String[]   @db.ObjectId
-   gamers  Gamer[] @relation(fields: [gamersIds], references: [id])
+   adminId String @db.ObjectId @unique
+   admin Gamer @relation(fields: [adminId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
    messages Message[]
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
