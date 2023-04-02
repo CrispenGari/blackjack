@@ -1,22 +1,12 @@
-import { CardType, EnvironmentType } from "@blackjack/server";
+import { CardType, EnvironmentType, GamerType } from "@blackjack/server";
 import { create } from "zustand";
 
-type GamerType = {
-  password: string;
-  id?: string | undefined;
-  nickname?: string | undefined;
-  loggedIn?: boolean | undefined;
-  engineId?: string | null | undefined;
-  createdAt?: Date | undefined;
-  updatedAt?: Date | undefined;
-} | null;
-
 export const useGamerStore = create<{
-  gamer: GamerType;
-  setGamer: (gamer: GamerType) => void;
+  gamer: GamerType | null;
+  setGamer: (gamer: GamerType | null) => void;
 }>((set) => ({
   gamer: null,
-  setGamer: (gamer: GamerType) => set({ gamer: gamer }),
+  setGamer: (gamer: GamerType | null) => set({ gamer: gamer }),
 }));
 
 export const useEnvironmentStore = create<{
@@ -25,7 +15,12 @@ export const useEnvironmentStore = create<{
   setEnvironment: (env: EnvironmentType) => void;
   setGamersIds: (gamersIds: Array<string>) => void;
   pickCard: (card: CardType, gamerId: string, myId: string) => void;
-  matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) => void;
+  matchCards: (
+    cards: CardType[],
+    gamerId: string,
+    last: GamerType,
+    next: GamerType
+  ) => void;
 }>((set) => ({
   environment: null,
   gamersIds: [],
@@ -69,7 +64,12 @@ export const useEnvironmentStore = create<{
       }
       return {};
     }),
-  matchCards: (cards: CardType[], gamerId: string, lastPlayer: string) =>
+  matchCards: (
+    cards: CardType[],
+    gamerId: string,
+    last: GamerType,
+    next: GamerType
+  ) =>
     set((basket) => {
       if (!!basket.environment) {
         const unique = [
@@ -84,7 +84,8 @@ export const useEnvironmentStore = create<{
           ...basket,
           environment: {
             ...basket.environment,
-            lastPlayer: lastPlayer,
+            last: last,
+            next: next,
             played: unique,
             players: basket.environment.players.map((player) => {
               if (player.id === gamerId) {

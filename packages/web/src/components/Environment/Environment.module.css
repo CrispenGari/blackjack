@@ -2,17 +2,24 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
+
 .environment__top {
   flex: 0.6;
   display: flex;
 }
 .environment__bottom {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   flex: 0.4;
-  justify-content: space-evenly;
   position: relative;
+}
+.environment__bottom__cards {
+  flex: 1;
+  justify-content: space-evenly;
+  display: flex;
+  flex-wrap: wrap;
 }
 .environment__top__left {
   flex: 2;
@@ -29,7 +36,8 @@
   user-select: none;
   user-zoom: none;
 }
-.environment__top__center > button {
+.environment__top__center > button,
+.environment__bottom > button {
   width: 100px !important;
   transition: all 1s ease;
   border: none !important;
@@ -39,9 +47,15 @@
 .environment__top__center > p {
   text-align: center;
 }
-.environment__top__center > button:hover {
+.environment__top__center > button:hover,
+.environment__bottom > button:hover {
   background-color: var(--main) !important;
   color: white !important;
+}
+.environment__bottom > button {
+  margin: 10px;
+  margin-bottom: 30px;
+  background-color: var(--secondary) !important;
 }
 .environment__top__right {
   flex: 2;

@@ -4,6 +4,11 @@
   display: flex;
   flex-direction: column;
   background-color: var(--main);
+  overflow-x: hidden;
+}
+
+.game::-webkit-scrollbar {
+  display: none;
 }
 .game__main {
   width: 100%;

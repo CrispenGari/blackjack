@@ -21,7 +21,14 @@ export const updateGameEnvironmentSchema = z.object({
   blackJack: z.string(),
   played: z.array(cardSchema),
   players: z.array(playerSchema),
-  lastPlayer: z.string(),
+  last: playerSchema.nullable(),
+  next: playerSchema.nullable(),
+});
+
+export const updateNextPlayerSchema = z.object({
+  env: updateGameEnvironmentSchema,
+  last: playerSchema.nullable(),
+  next: playerSchema.nullable(),
 });
 
 export const startGameSchema = z.object({

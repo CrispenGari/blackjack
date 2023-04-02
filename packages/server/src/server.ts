@@ -2,7 +2,10 @@ import "dotenv/config";
 import _ from "node-env-types";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 export { type AppRouter } from "./routes/app.routes";
-export { type GamePayLoadType as EnvironmentType } from "./routes/game/game.router";
+export {
+  type GamePayLoadType as EnvironmentType,
+  GamerType,
+} from "./routes/game/game.router";
 
 import Fastify from "fastify";
 import cors from "@fastify/cors";

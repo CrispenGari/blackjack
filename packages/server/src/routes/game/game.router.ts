@@ -9,11 +9,14 @@ import {
   onGameStartSchema,
   startGameSchema,
   updateGameEnvironmentSchema,
+  playerSchema,
+  updateNextPlayerSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
 import { shareCards, shuffle } from "../../utils";
 
 export type GamePayLoadType = z.TypeOf<typeof updateGameEnvironmentSchema>;
+export type GamerType = z.TypeOf<typeof playerSchema>;
 
 const ee = new EventEmitter({
   captureRejections: true,
@@ -41,6 +44,16 @@ export const gameRouter = router({
     .input(updateGameEnvironmentSchema)
     .mutation(({ input }) => {
       ee.emit(Events.ON_GAME_STATE_CHANGE, input);
+    }),
+  updateNextPlayer: publicProcedure
+    .input(updateNextPlayerSchema)
+    .mutation(({ input: { env, last, next } }) => {
+      const payload: GamePayLoadType = {
+        ...env,
+        last,
+        next,
+      };
+      ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
     }),
   startGame: publicProcedure
     .input(startGameSchema)
@@ -106,7 +119,8 @@ export const gameRouter = router({
         blackJack,
         players: gamePlayers,
         played: [],
-        lastPlayer: "",
+        last: null,
+        next: { ...gamePlayers[0] },
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
       ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
