@@ -13,6 +13,7 @@ import Player from "../Player/Player";
 import StartGameModal from "../StartGameModal/StartGameModal";
 import styles from "./Environment.module.css";
 import { trpc } from "@/utils/trpc";
+import { CARDS_BACK } from "@/constants";
 interface Props {
   engine: Engine & {
     messages: (Message & {
@@ -87,13 +88,31 @@ const Environment: React.FC<Props> = ({ engine }) => {
             {!!!environment?.played.length ? (
               <>
                 <div className={styles.environment__top__center__card}>
-                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                  <CImage
+                    alt="card"
+                    src={
+                      CARDS_BACK.find((c) => c.id === environment?.backCover)
+                        ?.src
+                    }
+                  />
                 </div>
                 <div className={styles.environment__top__center__card}>
-                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                  <CImage
+                    alt="card"
+                    src={
+                      CARDS_BACK.find((c) => c.id === environment?.backCover)
+                        ?.src
+                    }
+                  />
                 </div>
                 <div className={styles.environment__top__center__card}>
-                  <CImage alt="card" src={`/cards/back/back.jpg`} />
+                  <CImage
+                    alt="card"
+                    src={
+                      CARDS_BACK.find((c) => c.id === environment?.backCover)
+                        ?.src
+                    }
+                  />
                 </div>
               </>
             ) : (

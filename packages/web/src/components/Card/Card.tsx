@@ -4,7 +4,7 @@ import { CardType, GamerType } from "@blackjack/server";
 import { CImage } from "@coreui/react";
 import React from "react";
 import styles from "./Card.module.css";
-import { BLACK_JACKS } from "@/constants";
+import { BLACK_JACKS, CARDS_BACK } from "@/constants";
 interface Props {
   card: CardType;
   show: boolean;
@@ -89,7 +89,7 @@ const Card: React.FC<Props> = ({
     if (!!!currentPlayer || !!!gamer) return;
     // you are not supposed to play
     if (currentPlayer.id !== gamer.id && typeof setError !== "undefined") {
-      setError(`It's ${currentPlayer.nickname}'s turn to play.`);
+      setError(`it's ${currentPlayer.nickname}'s turn to play.`);
       return;
     }
     typeof setError !== "undefined" && setError("");
@@ -116,7 +116,7 @@ const Card: React.FC<Props> = ({
         src={
           show
             ? `/cards/svg/${card.id.toLocaleLowerCase()}.svg`
-            : `/cards/back/back.jpg`
+            : CARDS_BACK.find((c) => c.id === environment?.backCover)?.src
         }
       />
     </div>

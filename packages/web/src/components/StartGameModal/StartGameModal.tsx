@@ -1,4 +1,4 @@
-import { BLACK_JACKS } from "@/constants";
+import { BLACK_JACKS, CARDS_BACK } from "@/constants";
 import { trpc } from "@/utils/trpc";
 import { Engine } from "@blackjack/server";
 import {
@@ -25,10 +25,19 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
     name: string;
     id: string;
   }>(BLACK_JACKS[0]);
+  const [cover, setCover] = React.useState<{
+    id: string;
+    src: string;
+  }>(CARDS_BACK[0]);
   const { gamersIds } = useEnvironmentStore((s) => s);
+
+  const backCardsScrollRef = React.useRef();
   const onSubmit = async () => {
-    await mutate({ engineId: engine.id, blackJack: jack.id });
-    // console.log({ gamersIds });
+    await mutate({
+      engineId: engine.id,
+      blackJack: jack.id,
+      backCover: cover.id,
+    });
   };
 
   React.useEffect(() => {
@@ -48,20 +57,20 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
       className={styles.start__game__modal}
     >
       <CModalHeader className={styles.start__game__modal__header}>
-        <CModalTitle>Join Game Environment - {engine.name}</CModalTitle>
+        <CModalTitle>Start a New Game - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.start__game__modal__body}>
         <h1>{gamersIds.length} more gamers</h1>
         <h2>Select Black Jack</h2>
-        <div className={styles.start__game__modal__body__jacks}>
+        <div className={styles.start__game__modal__body__cards}>
           {BLACK_JACKS.map((_jack) => (
             <div
               onClick={() => setJack(_jack)}
               key={_jack.id}
               className={
                 jack.id === _jack.id
-                  ? styles.start__game__modal__body__jack__active
-                  : styles.start__game__modal__body__jack
+                  ? styles.start__game__modal__body__card__active
+                  : styles.start__game__modal__body__card
               }
             >
               <CImage
@@ -69,6 +78,23 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
                 src={`/cards/jacks/${_jack.id.toLowerCase()}.svg`}
               />
               <h3>{_jack.name}</h3>
+            </div>
+          ))}
+        </div>
+        <h2>Select Card Cover</h2>
+        <div className={styles.start__game__modal__body__cards}>
+          {CARDS_BACK.map((_cover) => (
+            <div
+              onClick={() => setCover(_cover)}
+              key={_cover.id}
+              className={
+                cover.id === _cover.id
+                  ? styles.start__game__modal__body__card__active
+                  : styles.start__game__modal__body__card
+              }
+            >
+              <CImage alt="jack" src={_cover.src} />
+              <h3>{_cover.id}</h3>
             </div>
           ))}
         </div>

@@ -57,79 +57,85 @@ export const gameRouter = router({
     }),
   startGame: publicProcedure
     .input(startGameSchema)
-    .mutation(async ({ input: { engineId, blackJack }, ctx: { prisma } }) => {
-      const engine = await prisma.engine.findFirst({
-        where: {
-          id: engineId,
-        },
-        include: {
-          messages: {
-            include: {
-              sender: true,
+    .mutation(
+      async ({
+        input: { engineId, blackJack, backCover },
+        ctx: { prisma },
+      }) => {
+        const engine = await prisma.engine.findFirst({
+          where: {
+            id: engineId,
+          },
+          include: {
+            messages: {
+              include: {
+                sender: true,
+              },
             },
           },
-        },
-      });
-      if (!!!engine)
-        return {
-          error: { field: "engine", message: "Failed to find the engine." },
-        };
+        });
+        if (!!!engine)
+          return {
+            error: { field: "engine", message: "Failed to find the engine." },
+          };
 
-      const nPlayers: number = engine.gamersIds.length;
-      if (nPlayers < 2)
-        return {
-          error: {
-            field: "players",
-            message: "You can't start the game alone.",
+        const nPlayers: number = engine.gamersIds.length;
+        if (nPlayers < 2)
+          return {
+            error: {
+              field: "players",
+              message: "You can't start the game alone.",
+            },
+          };
+
+        const unselected =
+          blackJack === "J_OF_CLUBS" ? "J_OF_SPADES" : "J_OF_CLUBS";
+        const gameCards = shuffle<CardType>(
+          CARDS.filter((card) => card.id !== unselected)
+        );
+        const potions = shareCards<CardType>(gameCards, nPlayers);
+        const gamers = await prisma.gamer.findMany({
+          where: { id: { in: engine.gamersIds } },
+        });
+
+        /**
+         * shuffle the game gamers and assign them some numbers.
+         */
+        const gamePlayers = gamers
+          .sort(() => Math.random() - 0.5)
+          .map((gamer, index) => ({
+            ...gamer,
+            password: "<hidden>",
+            total: potions[index].length,
+            cards: potions[index],
+            playerNumber: index + 1,
+          }));
+
+        await prisma.engine.update({
+          where: { id: engine.id },
+          data: {
+            active: true,
+            playing: true,
           },
+        });
+        const payload: GamePayLoadType = {
+          engineId: engine.id,
+          blackJack,
+          backCover,
+          players: gamePlayers,
+          played: [],
+          last: null,
+          next: { ...gamePlayers[0] },
         };
-
-      const unselected =
-        blackJack === "J_OF_CLUBS" ? "J_OF_SPADES" : "J_OF_CLUBS";
-      const gameCards = shuffle<CardType>(
-        CARDS.filter((card) => card.id !== unselected)
-      );
-      const potions = shareCards<CardType>(gameCards, nPlayers);
-      const gamers = await prisma.gamer.findMany({
-        where: { id: { in: engine.gamersIds } },
-      });
-
-      /**
-       * shuffle the game gamers and assign them some numbers.
-       */
-      const gamePlayers = gamers
-        .sort(() => Math.random() - 0.5)
-        .map((gamer, index) => ({
-          ...gamer,
-          password: "<hidden>",
-          total: potions[index].length,
-          cards: potions[index],
-          playerNumber: index + 1,
-        }));
-
-      await prisma.engine.update({
-        where: { id: engine.id },
-        data: {
-          active: true,
-          playing: true,
-        },
-      });
-      const payload: GamePayLoadType = {
-        engineId: engine.id,
-        blackJack,
-        players: gamePlayers,
-        played: [],
-        last: null,
-        next: { ...gamePlayers[0] },
-      };
-      ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
-      ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
-      ee.emit(Events.ON_GAME_START, { engine });
-      return {
-        blackJack,
-        players: gamePlayers,
-      };
-    }),
+        ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
+        ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
+        ee.emit(Events.ON_GAME_START, { engine });
+        return {
+          blackJack,
+          players: gamePlayers,
+        };
+      }
+    ),
   onGameStateChanged: publicProcedure
     .input(onGameStateChangedSchema)
     .subscription(({ input: { engineId } }) => {

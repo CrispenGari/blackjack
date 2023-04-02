@@ -32,13 +32,47 @@
   font-size: 1rem;
 }
 
-.start__game__modal__body__jacks {
+.start__game__modal__body__cards {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  padding: 0px 10px;
 }
-.start__game__modal__body__jack,
-.start__game__modal__body__jack__active {
+
+.start__game__modal__body__cards::-webkit-scrollbar {
+  height: 5px;
+  border-radius: 999px;
+}
+.start__game__modal__body__cards:last-of-type {
+  justify-content: unset;
+}
+
+/* Track */
+.start__game__modal__body__cards::-webkit-scrollbar-track {
+  background: var(--tertiary);
+}
+
+/* Handle */
+.start__game__modal__body__cards::-webkit-scrollbar-thumb {
+  background: var(--main);
+  cursor: pointer;
+}
+
+/* Handle on hover */
+.start__game__modal__body__cards::-webkit-scrollbar-thumb:hover {
+  background: var(--main);
+}
+.start__game__modal__body__cards:first-of-type::-webkit-scrollbar {
+  display: none;
+}
+.start__game__modal__body__cards:first-of-type {
+  margin-bottom: 10px;
+}
+
+.start__game__modal__body__card,
+.start__game__modal__body__card__active {
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -49,23 +83,24 @@
   background-color: var(--main);
   transition: all 1s ease;
   border: 1px solid transparent;
+  margin-left: 10px;
 }
-.start__game__modal__body__jack {
+.start__game__modal__body__card {
   background-color: transparent !important;
   border: 1px solid var(--main);
 }
-.start__game__modal__body__jack:hover,
-.start__game__modal__body__jack__active:hover {
+.start__game__modal__body__card:hover,
+.start__game__modal__body__card__active:hover {
   border: 1px solid var(--main);
   transform: scale(1.05);
 }
-.start__game__modal__body__jack > img,
-.start__game__modal__body__jack__active > img {
+.start__game__modal__body__card > img,
+.start__game__modal__body__card__active > img {
   width: 100px;
   -webkit-user-drag: none;
 }
-.start__game__modal__body__jack > h3,
-.start__game__modal__body__jack__active > h3 {
+.start__game__modal__body__card > h3,
+.start__game__modal__body__card__active > h3 {
   font-size: 0.9rem;
   margin-top: 5px;
 }

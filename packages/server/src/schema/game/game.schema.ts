@@ -19,6 +19,7 @@ export const playerSchema = z.object({
 export const updateGameEnvironmentSchema = z.object({
   engineId: z.string(),
   blackJack: z.string(),
+  backCover: z.string(),
   played: z.array(cardSchema),
   players: z.array(playerSchema),
   last: playerSchema.nullable(),
@@ -33,7 +34,9 @@ export const updateNextPlayerSchema = z.object({
 
 export const startGameSchema = z.object({
   engineId: z.string(),
-  blackJack: z.string(), // J_OF_CLUBS // J_OF_SPADES
+  blackJack: z.string(),
+  // J_OF_CLUBS // J_OF_SPADES
+  backCover: z.string(),
 });
 
 export const onGameStateChangedSchema = z.object({
