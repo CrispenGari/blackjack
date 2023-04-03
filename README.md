@@ -6,6 +6,32 @@ This is an online interactive online game build using `trpc` with `fastify` and 
 <img src="/logo.png" alt="logo" width="200"/>
 </p>
 
+This is the folder structure of the `blackjack` mono repo.
+
+```
+📁 packages
+ |------ 📁 server
+ |------ 📁 web
+📁 prisma
+📁 assets
+ |------ 📁 cards
+          |------ 📁 back
+          |------ 📁 jacks
+          |------ 📁 png
+          |------ 📁 svg
+```
+
+The following are the back covers that players can select before starting the game:
+
+<p align="center">
+    <img src="/assets/cards/back/black.png" alt="logo" width="100"/>
+    <img src="/assets/cards/back/blue.png" alt="logo" width="100"/>
+    <img src="/assets/cards/back/red.png" alt="logo" width="100"/>
+    <img src="/assets/cards/back/purple.png" alt="logo" width="100"/>
+    <img src="/assets/cards/back/orange.png" alt="logo" width="100"/>
+    <img src="/assets/cards/back/green.png" alt="logo" width="100"/>
+</p>
+
 ### Credits
 
 I give credits to [this](https://code.google.com/archive/p/vector-playing-cards/downloads) website where i got the `.svg` and `.png` cards image faces from.

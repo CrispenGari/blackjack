@@ -72,7 +72,7 @@ export const useEnvironmentStore = create<{
   ) =>
     set((basket) => {
       if (!!basket.environment) {
-        const unique = [
+        const played = [
           ...new Map(
             [...basket.environment.played, ...cards].map((item) => [
               item["id"],
@@ -84,9 +84,9 @@ export const useEnvironmentStore = create<{
           ...basket,
           environment: {
             ...basket.environment,
-            last: last,
-            next: next,
-            played: unique,
+            last,
+            next,
+            played,
             players: basket.environment.players.map((player) => {
               if (player.id === gamerId) {
                 // it's your cards
