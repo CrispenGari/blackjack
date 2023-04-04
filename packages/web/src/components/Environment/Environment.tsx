@@ -23,12 +23,65 @@ interface Props {
 }
 const Environment: React.FC<Props> = ({ engine }) => {
   const { gamer } = useGamerStore((state) => state);
+  const { mutate: mutateMatchCards } = trpc.game.matchCards.useMutation();
   const { isLoading, mutate } = trpc.game.updateNextPlayer.useMutation();
   const [pair, setPair] = React.useState<CardType[]>([]);
   const { environment } = useEnvironmentStore((state) => state);
   const [open, setOpen] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>("");
+  const [played, setPlayed] = React.useState<CardType[]>([]);
 
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!pair.length) {
+      if (pair.length == 2) {
+        const values = pair.map((c) => c.value);
+        const matched = values.every((v) => v === values[0]);
+        if (matched) {
+          setPlayed(pair);
+        }
+        setPair([]);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [pair]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!environment && !!gamer && !!played.length) {
+      (async () => {
+        const me = environment.players.find((player) => player.id === gamer.id);
+        if (!!!me) return;
+        const payload = {
+          env: environment,
+          cards: played,
+          gamerId: me.id,
+          next: me,
+          last: me,
+        };
+        await mutateMatchCards({
+          ...payload,
+        });
+        await setPlayed([]);
+      })();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [environment, gamer, mutateMatchCards, played]);
+
+  React.useEffect(() => {
+    if (!!error) {
+      const timeoutId = setTimeout(() => {
+        setError("");
+      }, 5000);
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [error]);
   const opponents = environment?.players.filter(
     (player) => player.id !== gamer?.id
   );
@@ -47,28 +100,16 @@ const Environment: React.FC<Props> = ({ engine }) => {
     });
   };
 
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!environment) {
-      (async (env) => {
-        // await mutate(env);
-      })(environment);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [environment]);
-
   return (
     <div className={styles.environment}>
       <StartGameModal engine={engine} open={open} setOpen={setOpen} />
       <div className={styles.environment__top}>
         <div className={styles.environment__top__left}>
           {opponents?.length && opponents.length >= 1 && (
-            <Player player={opponents[0]} />
+            <Player setError={setError} player={opponents[0]} />
           )}
           {opponents?.length && opponents.length >= 3 && (
-            <Player player={opponents[2]} />
+            <Player setError={setError} player={opponents[2]} />
           )}
         </div>
         <div className={styles.environment__top__center}>
@@ -92,7 +133,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
                     alt="card"
                     src={
                       CARDS_BACK.find((c) => c.id === environment?.backCover)
-                        ?.src
+                        ?.src || "/cards/back/black.png"
                     }
                   />
                 </div>
@@ -101,7 +142,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
                     alt="card"
                     src={
                       CARDS_BACK.find((c) => c.id === environment?.backCover)
-                        ?.src
+                        ?.src || "/cards/back/black.png"
                     }
                   />
                 </div>
@@ -110,7 +151,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
                     alt="card"
                     src={
                       CARDS_BACK.find((c) => c.id === environment?.backCover)
-                        ?.src
+                        ?.src || "/cards/back/black.png"
                     }
                   />
                 </div>
@@ -126,27 +167,22 @@ const Environment: React.FC<Props> = ({ engine }) => {
               ))
             )}
           </div>
-          <p>
-            {!!environment?.next
-              ? environment.next.id === gamer?.id
+
+          {!!environment?.next && (
+            <CAlert color="success" style={{ padding: 5 }}>
+              {" "}
+              {environment.next.id === gamer?.id
                 ? `it's your turn to play`
-                : `it's ${environment?.next?.nickname}'s turn to play.`
-              : null}
-          </p>
-          <p>
-            {!!environment?.last
-              ? environment.last.id === gamer?.id
-                ? `you the last one to play`
-                : `it's ${environment?.next?.nickname} who last played.`
-              : null}
-          </p>
+                : `it's ${environment?.next?.nickname}'s turn to play.`}
+            </CAlert>
+          )}
         </div>
         <div className={styles.environment__top__right}>
           {opponents?.length && opponents.length >= 2 && (
-            <Player player={opponents[1]} />
+            <Player setError={setError} player={opponents[1]} />
           )}
           {opponents?.length && opponents.length >= 4 && (
-            <Player player={opponents[3]} />
+            <Player setError={setError} player={opponents[3]} />
           )}
         </div>
       </div>

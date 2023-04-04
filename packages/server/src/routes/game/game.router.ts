@@ -11,6 +11,7 @@ import {
   updateGameEnvironmentSchema,
   playerSchema,
   updateNextPlayerSchema,
+  matchCardsSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
 import { shareCards, shuffle } from "../../utils";
@@ -52,6 +53,34 @@ export const gameRouter = router({
         ...env,
         last,
         next,
+      };
+      ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
+    }),
+  matchCards: publicProcedure
+    .input(matchCardsSchema)
+    .mutation(({ input: { env, last, next, cards, gamerId } }) => {
+      const played = [
+        ...new Map(
+          [...env.played, ...cards].map((item) => [item["id"], item])
+        ).values(),
+      ];
+      const payload: GamePayLoadType = {
+        ...env,
+        last,
+        next,
+        played,
+        players: env.players.map((player) => {
+          if (player.id === gamerId) {
+            // it's your cards
+            const cardIds: string[] = cards.map((c) => c.id);
+            return {
+              ...player,
+              cards: player.cards.filter((card) => !cardIds.includes(card.id)),
+            };
+          } else {
+            return { ...player };
+          }
+        }),
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
     }),

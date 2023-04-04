@@ -21,18 +21,14 @@ const Card: React.FC<Props> = ({
   onClick,
   setError,
 }) => {
-  const { isLoading, mutate } = trpc.game.updateGameEnvironment.useMutation();
-  const [matched, setMatched] = React.useState<boolean>(false);
-  const [played, setPlayed] = React.useState<CardType[]>([]);
-  const { environment, matchCards } = useEnvironmentStore((s) => s);
+  const { environment } = useEnvironmentStore((s) => s);
   const { gamer } = useGamerStore((s) => s);
   const selectCard = async () => {
-    const restricted = [...BLACK_JACKS, ...pair!].map((p) => p.id);
+    const _pair = typeof pair !== "undefined" ? pair : [];
+    const restricted = [...BLACK_JACKS, ..._pair].map((p) => p.id);
     if (restricted.includes(card.id)) return;
-    setPair!((state) => [...state, card]);
+    if (typeof setPair !== "undefined") setPair((state) => [...state, card]);
   };
-
-  const [playNext, setPlayNext] = React.useState(false);
   const [currentPlayer, setCurrentPlayer] = React.useState<
     GamerType | null | undefined
   >();
@@ -46,45 +42,6 @@ const Card: React.FC<Props> = ({
     };
   }, [environment]);
 
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted) {
-      if (pair?.length == 2) {
-        const values = pair.map((c) => c.value);
-        setMatched(values.every((v) => v === values[0]));
-        setPlayed(pair);
-        setPair!([]);
-      } else {
-        setMatched(false);
-      }
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [setPair, pair]);
-
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && matched && !!gamer?.id && !!gamer.nickname) {
-      matchCards(played, gamer.id, gamer, gamer);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [matched, gamer, played, matchCards]);
-
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!environment && !!matched) {
-      (async () => {
-        await mutate(environment);
-      })();
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [environment, mutate, matched]);
-
   const handleClickCard = () => {
     if (!!!currentPlayer || !!!gamer) return;
     // you are not supposed to play
@@ -93,7 +50,6 @@ const Card: React.FC<Props> = ({
       return;
     }
     typeof setError !== "undefined" && setError("");
-    if (environment?.next) if (isLoading) return;
     if (typeof onClick === "undefined") {
       selectCard();
       return;

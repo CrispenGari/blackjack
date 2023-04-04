@@ -15,12 +15,6 @@ export const useEnvironmentStore = create<{
   setEnvironment: (env: EnvironmentType) => void;
   setGamersIds: (gamersIds: Array<string>) => void;
   pickCard: (card: CardType, gamerId: string, myId: string) => void;
-  matchCards: (
-    cards: CardType[],
-    gamerId: string,
-    last: GamerType,
-    next: GamerType
-  ) => void;
 }>((set) => ({
   environment: null,
   gamersIds: [],
@@ -63,50 +57,5 @@ export const useEnvironmentStore = create<{
         };
       }
       return {};
-    }),
-  matchCards: (
-    cards: CardType[],
-    gamerId: string,
-    last: GamerType,
-    next: GamerType
-  ) =>
-    set((basket) => {
-      if (!!basket.environment) {
-        const played = [
-          ...new Map(
-            [...basket.environment.played, ...cards].map((item) => [
-              item["id"],
-              item,
-            ])
-          ).values(),
-        ];
-        return {
-          ...basket,
-          environment: {
-            ...basket.environment,
-            last,
-            next,
-            played,
-            players: basket.environment.players.map((player) => {
-              if (player.id === gamerId) {
-                // it's your cards
-                const cardIds: string[] = cards.map((c) => c.id);
-                return {
-                  ...player,
-                  cards: player.cards.filter(
-                    (card) => !cardIds.includes(card.id)
-                  ),
-                };
-              } else {
-                return { ...player };
-              }
-            }),
-          },
-        };
-      }
-      return {
-        ...basket,
-        environment: null,
-      };
     }),
 }));

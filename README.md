@@ -10,15 +10,15 @@ This is the folder structure of the `blackjack` mono repo.
 
 ```
 📁 packages
- |------ 📁 server
- |------ 📁 web
+ |---📁 server
+ |---📁 web
 📁 prisma
 📁 assets
- |------ 📁 cards
-          |------ 📁 back
-          |------ 📁 jacks
-          |------ 📁 png
-          |------ 📁 svg
+ |---📁 cards
+          |---📁 back
+          |---📁 jacks
+          |---📁 png
+          |---📁 svg
 ```
 
 The following are the back covers that players can select before starting the game:
