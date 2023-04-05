@@ -1,19 +1,25 @@
 import React from "react";
 import styles from "@/styles/Game.module.css";
-import { Environment, Header, Toast } from "@/components";
+import { Environment, Header, Loading, Toast } from "@/components";
 import { CButton, CImage, CToaster } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useEnvironmentStore, useGamerStore } from "@/store";
 interface Props {}
 const Game: React.FC<Props> = ({}) => {
+  const {
+    data: player,
+    isLoading: fetching,
+    isFetched,
+  } = trpc.gamer.gamer.useQuery();
+
   const router = useRouter();
   const [toast, addToast] = React.useState(0);
   const toaster = React.useRef();
   const { setEnvironment, setGamersIds } = useEnvironmentStore(
     (state) => state
   );
-  const { gamer } = useGamerStore((state) => state);
+  const { gamer, setGamer } = useGamerStore((state) => state);
 
   const engineId: string = (router.query.id as string) || "";
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
@@ -92,6 +98,29 @@ const Game: React.FC<Props> = ({}) => {
     router.replace("/games");
   };
 
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && isFetched) {
+      setGamer((player?.gamer as any) || null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [isFetched, player, setGamer]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && isFetched) {
+      if (!!!gamer) {
+        router.replace("/");
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [isFetched, router, gamer]);
+
+  if (fetching) return <Loading />;
   return (
     <div className={styles.game}>
       <Header />
@@ -109,6 +138,7 @@ const Game: React.FC<Props> = ({}) => {
                 : 0}{" "}
               opponents.
             </p>
+            <p>🎈</p>
           </div>
           <CButton onClick={leaveEngine} disabled={leaving}>
             Leave

@@ -9,9 +9,11 @@ import {
   CForm,
   CFormInput,
   CAlert,
+  CImage,
 } from "@coreui/react";
 import React from "react";
 import styles from "./NewGameModal.module.css";
+import { CARDS_BACK } from "@/constants";
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
@@ -22,8 +24,12 @@ const NewGameModal: React.FC<Props> = ({ open, setOpen }) => {
     name: string;
   }>({ name: "" });
 
+  const [cover, setCover] = React.useState<{
+    id: string;
+    src: string;
+  }>(CARDS_BACK[0]);
   const onSubmit = async () => {
-    await mutate({ name });
+    await mutate({ name, cover: cover.id });
   };
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -60,6 +66,24 @@ const NewGameModal: React.FC<Props> = ({ open, setOpen }) => {
               setForm((state) => ({ ...state, name: e.target.value }))
             }
           />
+
+          <h2>Select Card Cover</h2>
+          <div className={styles.new__game__modal__body__cards}>
+            {CARDS_BACK.map((_cover) => (
+              <div
+                onClick={() => setCover(_cover)}
+                key={_cover.id}
+                className={
+                  cover.id === _cover.id
+                    ? styles.new__game__modal__body__card__active
+                    : styles.new__game__modal__body__card
+                }
+              >
+                <CImage alt="jack" src={_cover.src} />
+                <h3>{_cover.id}</h3>
+              </div>
+            ))}
+          </div>
           {!!data?.error && (
             <CAlert
               style={{ marginTop: 10, userSelect: "none" }}

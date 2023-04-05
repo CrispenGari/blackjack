@@ -14,7 +14,7 @@ const Home: React.FC<Props> = ({}) => {
   React.useEffect(() => {
     let mounted: boolean = true;
     if (mounted && !!data) {
-      setGamer(data.gamer);
+      setGamer(data.gamer as any);
     }
     return () => {
       mounted = false;
@@ -34,15 +34,12 @@ const Home: React.FC<Props> = ({}) => {
       mounted = false;
     };
   }, [isLoading, router, gamer]);
-
-  if (isLoading) {
-    return (
-      <div className="">
-        <Loading />
-      </div>
-    );
-  }
-  return <div className={styles.home}>@trpc</div>;
+  if (isLoading) return <Loading />;
+  return (
+    <div className={styles.home}>
+      <Loading />
+    </div>
+  );
 };
 
 export default Home;

@@ -181,7 +181,7 @@ export const engineRouter = router({
     }),
   createEngine: publicProcedure
     .input(createEngineSchema)
-    .mutation(async ({ ctx: { req, prisma }, input: { name } }) => {
+    .mutation(async ({ ctx: { req, prisma }, input: { name, cover } }) => {
       const jwt = req.cookies[__cookieName__];
       if (!!!jwt)
         return {
@@ -241,6 +241,7 @@ export const engineRouter = router({
         const engine = await prisma.engine.create({
           data: {
             name: name.trim().toLowerCase(),
+            cover,
             admin: { connect: { id: gamer.id } },
           },
           include: {

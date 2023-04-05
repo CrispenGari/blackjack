@@ -1,8 +1,6 @@
 .game {
   position: relative;
   width: 100px;
-  height: 100px;
-  aspect-ratio: 1;
   background-color: var(--main);
   display: flex;
   flex-direction: column;
@@ -33,7 +31,6 @@
 .game > img {
   -webkit-user-drag: none;
   width: 100%;
-  aspect-ratio: 1;
   border-radius: 5px;
 }
 .game__full,

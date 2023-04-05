@@ -30,6 +30,8 @@ model Engine{
    id       String    @id @default(auto()) @map("_id") @db.ObjectId
 
    name String @unique
+   cover String
+
    active Boolean @default(false)
    full Boolean @default(false)
    playing Boolean @default(false)

@@ -1,40 +1,21 @@
-import { useGamerStore } from "@/store";
-import { trpc } from "@/utils/trpc";
+import React from "react";
+import styles from "./EngineOptionsModal.module.css";
 import { Engine } from "@blackjack/server";
 import {
   CModal,
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CForm,
   CAlert,
   CModalFooter,
   CButton,
 } from "@coreui/react";
-import { useRouter } from "next/router";
-import React from "react";
-import styles from "./GameEngineModal.module.css";
 interface Props {
   engine: Engine;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
-  const router = useRouter();
-  const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
-  const onSubmit = async () => {
-    await mutate({ engineId: engine.id });
-  };
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!data?.engine) {
-      router.push(`/games/game/${data.engine.id}`);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [data, router]);
-
+const EngineOptionsModal: React.FC<Props> = ({ engine, open, setOpen }) => {
   return (
     <CModal
       visible={open}
@@ -46,15 +27,6 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
       </CModalHeader>
       <CModalBody className={styles.game__engine__modal__body}>
         <h1>{engine.gamersIds.length} more gamers in the engine.</h1>
-        {!!data?.error && (
-          <CAlert
-            style={{ marginTop: 10, userSelect: "none" }}
-            color="danger"
-            variant="solid"
-          >
-            <p>{data.error.message}</p>
-          </CAlert>
-        )}
       </CModalBody>
       <CModalFooter className={styles.game__engine__modal__footer}>
         <CButton
@@ -63,7 +35,7 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
           onClick={() => {
             setOpen((state) => !state);
           }}
-          disabled={isLoading}
+          //   disabled={isLoading}
         >
           Close
         </CButton>
@@ -71,8 +43,8 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
           className={styles.game__engine__modal__create__btn}
           type="button"
           color="primary"
-          onClick={onSubmit}
-          disabled={isLoading}
+          //   onClick={onSubmit}
+          //   disabled={isLoading}
         >
           Join
         </CButton>
@@ -81,4 +53,4 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
   );
 };
 
-export default GameEngineModal;
+export default EngineOptionsModal;

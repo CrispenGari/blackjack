@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createEngineSchema = z.object({
   name: z.string(),
+  cover: z.string(),
 });
 export const joinEngineSchema = z.object({
   engineId: z.string(),

@@ -4,42 +4,43 @@ import { CForm, CImage, CFormInput, CAlert, CButton } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useGamerStore } from "@/store";
+import { Loading } from "@/components";
 interface Props {}
 const Login: React.FC<Props> = ({}) => {
   const router = useRouter();
-  const { data: gamer } = trpc.gamer.gamer.useQuery();
+  const {
+    data: gamer,
+    isLoading: fetching,
+    refetch,
+  } = trpc.gamer.gamer.useQuery();
   const { setGamer, gamer: g } = useGamerStore((state) => state);
   const [{ nickname, password }, setForm] = React.useState<{
     nickname: string;
     password: string;
   }>({ nickname: "", password: "" });
 
-  const { data, mutate, isLoading } = trpc.gamer.login.useMutation();
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const { data, mutateAsync, isLoading } = trpc.gamer.login.useMutation();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await mutate({ nickname, password, web: true });
+    mutateAsync({ nickname, password, web: true }).then(async ({ gamer }) => {
+      if (!!gamer) {
+        await refetch();
+      }
+    });
   };
-
-  // React.useEffect(() => {
-  //   let mounted: boolean = true;
-  //   if (mounted && !!g) {
-  //     router.replace("/");
-  //   }
-  //   return () => {
-  //     mounted = false;
-  //   };
-  // }, [g, router]);
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted) {
-      setGamer(gamer?.gamer || null);
+    if (mounted && !!gamer?.gamer) {
+      setGamer((gamer.gamer as any) || null);
+      router.replace("/");
     }
     return () => {
       mounted = false;
     };
   }, [gamer, setGamer, router]);
 
+  if (fetching) return <Loading />;
   return (
     <div className={styles.login}>
       <div className={styles.login__left}>

@@ -8,7 +8,11 @@ import { useGamerStore } from "@/store";
 interface Props {}
 const Register: React.FC<Props> = ({}) => {
   const router = useRouter();
-  const { data: gamer } = trpc.gamer.gamer.useQuery();
+  const {
+    data: gamer,
+    isLoading: fetching,
+    refetch,
+  } = trpc.gamer.gamer.useQuery();
   const { setGamer, gamer: g } = useGamerStore((state) => state);
   const [{ nickname, password, confirmPassword }, setForm] = React.useState<{
     nickname: string;
@@ -16,27 +20,33 @@ const Register: React.FC<Props> = ({}) => {
     confirmPassword: string;
   }>({ nickname: "", password: "", confirmPassword: "" });
 
-  const { mutate, isLoading, data } = trpc.gamer.register.useMutation();
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const { mutateAsync, isLoading, data } = trpc.gamer.register.useMutation();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await mutate({
+    mutateAsync({
       confirmPassword,
       nickname,
       password,
       web: true,
+    }).then(async ({ gamer }) => {
+      if (!!gamer) {
+        await refetch();
+      }
     });
   };
 
   React.useEffect(() => {
     let mounted: boolean = true;
-    if (mounted) {
-      setGamer(gamer?.gamer || null);
+    if (mounted && !!gamer?.gamer) {
+      setGamer((gamer.gamer as any) || null);
+      router.replace("/");
     }
     return () => {
       mounted = false;
     };
-  }, [gamer, setGamer]);
+  }, [gamer, setGamer, router]);
 
+  if (fetching) return <Loading />;
   return (
     <div className={styles.register}>
       <div className={styles.register__left}>

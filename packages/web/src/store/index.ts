@@ -1,12 +1,12 @@
-import { CardType, EnvironmentType, GamerType } from "@blackjack/server";
+import { CardType, EnvironmentType, Gamer, GamerType } from "@blackjack/server";
 import { create } from "zustand";
 
 export const useGamerStore = create<{
-  gamer: GamerType | null;
-  setGamer: (gamer: GamerType | null) => void;
+  gamer: Required<Gamer> | null;
+  setGamer: (gamer: Required<Gamer> | null) => void;
 }>((set) => ({
   gamer: null,
-  setGamer: (gamer: GamerType | null) => set({ gamer: gamer }),
+  setGamer: (gamer: Required<Gamer> | null) => set({ gamer: gamer }),
 }));
 
 export const useEnvironmentStore = create<{
