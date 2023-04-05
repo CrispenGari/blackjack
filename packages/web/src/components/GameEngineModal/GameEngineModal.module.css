@@ -13,14 +13,17 @@
   outline: none !important;
 }
 
-.game__engine__modal__create__btn:hover,
-.game__engine__modal__close__btn:hover {
-  background-color: var(--main) !important;
-  color: white !important;
+.game__engine__modal__close__btn {
+  width: fit-content !important;
 }
 
 .game__engine__modal__create__btn {
   background-color: var(--main) !important;
+}
+.game__engine__modal__create__btn:hover,
+.game__engine__modal__close__btn:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
 }
 
 .game__engine__modal__close__btn {

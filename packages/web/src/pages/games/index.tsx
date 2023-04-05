@@ -51,7 +51,7 @@ const Games: React.FC<Props> = ({}) => {
         ) : (
           <div className={styles.games__main__games}>
             {data?.total === 0 ? (
-              <>
+              <div className={styles.games__main__games__no__engine}>
                 <p style={{ padding: 30, userSelect: "none" }}>
                   No engines/game environment that are available yet. You can go
                   ahead and create one.
@@ -59,7 +59,7 @@ const Games: React.FC<Props> = ({}) => {
                 <CButton onClick={() => setOpen(true)}>
                   Create New Engine/Environment
                 </CButton>
-              </>
+              </div>
             ) : (
               data?.engines.map((engine) => (
                 <Game key={engine.id} engine={engine} />

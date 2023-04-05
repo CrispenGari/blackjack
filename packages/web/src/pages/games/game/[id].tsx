@@ -93,6 +93,17 @@ const Game: React.FC<Props> = ({}) => {
     }
   );
 
+  trpc.engine.onDeleteEngine.useSubscription(
+    { engineId },
+    {
+      onData: (data) => {
+        if (data.id === engineId) {
+          router.replace("/games");
+        }
+      },
+    }
+  );
+
   const leaveEngine = async () => {
     await mutateLeaveEngine({ engineId });
     router.replace("/games");

@@ -9,6 +9,7 @@ export enum Events {
   ON_GAMER_JOIN = "ON_GAMER_JOIN",
   ON_GAMER_LEAVE = "ON_GAMER_LEAVE",
   ON_GAME_START = "ON_GAME_START",
+  ON_ENGINE_DELETE = "ON_ENGINE_DELETE",
 }
 
 export const CARDS = [

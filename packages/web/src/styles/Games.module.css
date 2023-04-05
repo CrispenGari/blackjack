@@ -54,21 +54,22 @@
 }
 
 .games__main__header > button,
-.games__main__games > button {
+.games__main__games__no__engine > button {
   background-color: var(--tertiary) !important;
   outline: none !important;
   border: none !important;
   color: black !important;
   transition: all 1s ease;
 }
-.games__main__games > button {
+.games__main__games__no__engine > button {
   background-color: var(--secondary) !important;
   color: white !important;
   width: 100%;
   max-width: 300px;
+  border: none !important;
 }
 .games__main__header > button:hover,
-.games__main__games > button:hover {
+.games__main__games__no__engine > button:hover {
   background-color: var(--primary) !important;
   color: white !important;
 }
@@ -91,11 +92,15 @@
 .games__main__games {
   display: flex;
   padding: 10px;
-  justify-content: space-around;
-
   flex-wrap: wrap;
 }
-
+.games__main__games__no__engine {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 .games__main__games::-webkit-scrollbar {
   display: none;
 }

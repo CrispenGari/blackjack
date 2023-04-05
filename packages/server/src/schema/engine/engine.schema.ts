@@ -7,6 +7,12 @@ export const createEngineSchema = z.object({
 export const joinEngineSchema = z.object({
   engineId: z.string(),
 });
+export const deleteEngineSchema = z.object({
+  engineId: z.string(),
+});
+export const onDeleteEngineSchema = z.object({
+  engineId: z.string(),
+});
 export const leaveEngineSchema = z.object({
   engineId: z.string(),
 });

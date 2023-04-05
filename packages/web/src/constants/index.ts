@@ -1,3 +1,19 @@
+export const relativeTimeObject = {
+  future: "in %s",
+  past: "%s",
+  s: "now",
+  m: "1m",
+  mm: "%dm",
+  h: "1h",
+  hh: "%dh",
+  d: "1d",
+  dd: "%dd",
+  M: "1M",
+  MM: "%dM",
+  y: "1y",
+  yy: "%dy",
+};
+
 export const BLACK_JACKS = [
   { id: "J_OF_CLUBS", name: "Jack Of Clubs" },
   { id: "J_OF_SPADES", name: "Jack Of Spades" },

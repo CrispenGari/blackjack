@@ -1,18 +1,35 @@
 .game {
   position: relative;
-  width: 100px;
-  background-color: var(--main);
+  width: 200px;
+  background-color: white;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 10px;
   user-select: none;
   user-zoom: none;
   margin: 5px;
   transition: all 1s;
-  padding: 10px;
   justify-content: center;
   cursor: pointer;
+}
+.game__engine__details {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary);
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+}
+.game__engine__details > p {
+  color: white;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  width: 100%;
+  font-weight: unset;
+  justify-content: space-between;
 }
 
 .game:hover {

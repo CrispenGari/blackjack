@@ -22,8 +22,17 @@ interface Props {
 const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
   const router = useRouter();
   const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
+  const {
+    data: deleteEngineData,
+    mutate: mutateDeleteEngine,
+    isLoading: deleting,
+  } = trpc.engine.deleteEngine.useMutation();
+  const { gamer } = useGamerStore((s) => s);
   const onSubmit = async () => {
     await mutate({ engineId: engine.id });
+  };
+  const deleteEngine = async () => {
+    await mutateDeleteEngine({ engineId: engine.id });
   };
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -55,24 +64,33 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
             <p>{data.error.message}</p>
           </CAlert>
         )}
+        {!!deleteEngineData?.error && (
+          <CAlert
+            style={{ marginTop: 10, userSelect: "none" }}
+            color="danger"
+            variant="solid"
+          >
+            <p>{deleteEngineData.error.message}</p>
+          </CAlert>
+        )}
       </CModalBody>
       <CModalFooter className={styles.game__engine__modal__footer}>
-        <CButton
-          className={styles.game__engine__modal__close__btn}
-          color="secondary"
-          onClick={() => {
-            setOpen((state) => !state);
-          }}
-          disabled={isLoading}
-        >
-          Close
-        </CButton>
+        {engine.adminId === gamer?.id && (
+          <CButton
+            className={styles.game__engine__modal__close__btn}
+            color="secondary"
+            onClick={deleteEngine}
+            disabled={isLoading || deleting}
+          >
+            Delete Engine
+          </CButton>
+        )}
         <CButton
           className={styles.game__engine__modal__create__btn}
           type="button"
           color="primary"
           onClick={onSubmit}
-          disabled={isLoading}
+          disabled={isLoading || deleting}
         >
           Join
         </CButton>
