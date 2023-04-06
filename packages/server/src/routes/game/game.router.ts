@@ -46,10 +46,10 @@ export const gameRouter = router({
   onGameOver: publicProcedure
     .input(onGameOverSchema)
     .subscription(({ input: { engineId } }) => {
-      return observable<{ engine: Engine }>((emit) => {
-        const handleEvent = async ({ engine }: { engine: Engine }) => {
-          if (engineId === engine.id) {
-            emit.next({ engine });
+      return observable<{ environment: GamePayLoadType }>((emit) => {
+        const handleEvent = async (payload: GamePayLoadType) => {
+          if (engineId === payload.engineId) {
+            emit.next({ environment: payload });
           }
         };
         ee.on(Events.ON_GAME_OVER, handleEvent);
@@ -90,59 +90,62 @@ export const gameRouter = router({
   updateGamePositions: publicProcedure
     .input(updateGamePositionsSchema)
     .mutation(({ input: { winner, env } }) => {
-      // players that are left in the game.
-      const players = env.players
-        .filter((player) => player.id !== winner.id)
-        .sort((a, b) => a.playerNumber - b.playerNumber)
-        .map((player, index) => ({
-          ...player,
-          playerNumber: index + 1,
-        }));
+      try {
+        // players that are left in the game.
+        const players = env.players
+          .filter((player) => player.id !== winner.id)
+          .sort((a, b) => a.playerNumber - b.playerNumber)
+          .map((player, index) => ({
+            ...player,
+            playerNumber: index + 1,
+          }));
+        // get the next and previous player
+        const next =
+          players.length === 1 ? null : players[winner.playerNumber - 1];
+        const last =
+          players.length === 1 ? null : players[winner.playerNumber - 2];
 
-      // get the next and previous player
-      const next =
-        players.length === 1 ? null : players[winner.playerNumber - 1];
-      const last =
-        players.length === 1 ? null : players[winner.playerNumber - 2];
-
-      const positions =
-        players.length === 1
-          ? [
-              ...env.positions,
-              {
-                nickname: winner.nickname,
-                points: 0,
-                position: env.positions.length + 1,
-              },
-              {
-                nickname: players[0].nickname,
-                points: 0,
-                position: env.positions.length + 2,
-              },
-            ]
-          : [
-              ...env.positions,
-              {
-                nickname: winner.nickname,
-                points: 0,
-                position: env.positions.length + 1,
-              },
-            ];
-      const payload: GamePayLoadType = {
-        ...env,
-        next,
-        last,
-        players: players.length === 1 ? [] : players,
-        positions,
-      };
-      ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
-      ee.emit(Events.ON_UPDATE_GAME_POSITIONS, {
-        engineId: env.engineId,
-        playerId: winner.id,
-        nickname: winner.nickname,
-      });
-      if (players.length === 1) {
-        ee.emit(Events.ON_GAME_OVER, payload);
+        const positions =
+          players.length === 1
+            ? [
+                ...env.positions,
+                {
+                  nickname: winner.nickname,
+                  points: 0,
+                  position: env.positions.length + 1,
+                },
+                {
+                  nickname: players[0].nickname,
+                  points: 0,
+                  position: env.positions.length + 2,
+                },
+              ]
+            : [
+                ...env.positions,
+                {
+                  nickname: winner.nickname,
+                  points: 0,
+                  position: env.positions.length + 1,
+                },
+              ];
+        const payload: GamePayLoadType = {
+          ...env,
+          next,
+          last,
+          players: players.length === 1 ? [] : players,
+          positions,
+        };
+        ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
+        ee.emit(Events.ON_UPDATE_GAME_POSITIONS, {
+          engineId: env.engineId,
+          playerId: winner.id,
+          nickname: winner.nickname,
+        });
+        if (players.length === 1) {
+          ee.emit(Events.ON_GAME_OVER, payload);
+        }
+      } catch (error: any) {
+        console.error(error.message);
       }
     }),
   updateGameEnvironment: publicProcedure
@@ -158,6 +161,7 @@ export const gameRouter = router({
         last,
         next,
       };
+
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
     }),
   matchCards: publicProcedure

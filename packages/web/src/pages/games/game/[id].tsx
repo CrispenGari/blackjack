@@ -131,7 +131,6 @@ const Game: React.FC<Props> = ({}) => {
     { engineId },
     {
       onData: (data) => {
-        console.log({ data });
         setOpenResults(true);
       },
     }

@@ -29,12 +29,12 @@ const GameResultsModal: React.FC<Props> = ({ open, setOpen, positions }) => {
     <CModal
       visible={open}
       onClose={() => setOpen(false)}
-      className={styles.game__engine__modal}
+      className={styles.game__results__modal}
     >
-      <CModalHeader className={styles.game__engine__modal__header}>
+      <CModalHeader className={styles.game__results__modal__header}>
         <CModalTitle>Game Over</CModalTitle>
       </CModalHeader>
-      <CModalBody className={styles.game__engine__modal__body}>
+      <CModalBody className={styles.game__results__modal__body}>
         <h1>GAME RESULTS</h1>
         <CTable color="dark">
           <CTableHead>
@@ -45,57 +45,19 @@ const GameResultsModal: React.FC<Props> = ({ open, setOpen, positions }) => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            <CTableRow>
-              <CTableHeaderCell scope="row">Default</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="primary">
-              <CTableHeaderCell scope="row">Primary</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="secondary">
-              <CTableHeaderCell scope="row">Secondary</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="success">
-              <CTableHeaderCell scope="row">Success</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="danger">
-              <CTableHeaderCell scope="row">Danger</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="warning">
-              <CTableHeaderCell scope="row">Warning</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="info">
-              <CTableHeaderCell scope="row">Info</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="light">
-              <CTableHeaderCell scope="row">Light</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
-            <CTableRow color="dark">
-              <CTableHeaderCell scope="row">Dark</CTableHeaderCell>
-              <CTableDataCell>Cell</CTableDataCell>
-              <CTableDataCell>Cell</CTableDataCell>
-            </CTableRow>
+            {positions.map((pos) => (
+              <CTableRow color="primary" key={pos.nickname}>
+                <CTableHeaderCell scope="row">{pos.nickname}</CTableHeaderCell>
+                <CTableDataCell>{pos.position}</CTableDataCell>
+                <CTableDataCell>{pos.points}</CTableDataCell>
+              </CTableRow>
+            ))}
           </CTableBody>
         </CTable>
       </CModalBody>
-      <CModalFooter className={styles.game__engine__modal__footer}>
+      <CModalFooter className={styles.game__results__modal__footer}>
         <CButton
-          className={styles.game__engine__modal__close__btn}
+          className={styles.game__results__modal__close__btn}
           color="secondary"
           onClick={() => {
             setOpen((state) => !state);
@@ -105,7 +67,7 @@ const GameResultsModal: React.FC<Props> = ({ open, setOpen, positions }) => {
           Close
         </CButton>
         <CButton
-          className={styles.game__engine__modal__create__btn}
+          className={styles.game__results__modal__create__btn}
           type="button"
           color="primary"
           //   onClick={onSubmit}

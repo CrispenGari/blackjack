@@ -61,9 +61,13 @@ const Environment: React.FC<Props> = ({ engine }) => {
           next: me,
           last: me,
         };
-        await mutateMatchCards({
-          ...payload,
-        });
+
+        if (!!me) {
+          await mutateMatchCards({
+            ...payload,
+          });
+        }
+
         await setPlayed([]);
       })();
     }

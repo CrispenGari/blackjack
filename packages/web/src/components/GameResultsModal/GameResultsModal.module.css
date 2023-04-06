@@ -1,0 +1,41 @@
+.game__results__modal__header,
+.game__results__modal__body,
+.game__results__modal__footer {
+  background-color: var(--secondary) !important;
+  color: white;
+  user-select: none;
+  user-zoom: none;
+}
+
+.game__results__modal__close__btn,
+.game__results__modal__create__btn {
+  width: 100px !important;
+  transition: all 1s ease;
+  border: none !important;
+  outline: none !important;
+}
+
+.game__results__modal__body {
+  padding: 0;
+}
+.game__results__modal__body > h1 {
+  margin: 10px;
+  font-size: 1.1rem !important;
+}
+
+.game__results__modal__close__btn {
+  width: fit-content !important;
+}
+
+.game__results__modal__create__btn {
+  background-color: var(--main) !important;
+}
+.game__results__modal__create__btn:hover,
+.game__results__modal__close__btn:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+.game__results__modal__close__btn {
+  background-color: var(--tertiary) !important;
+}
