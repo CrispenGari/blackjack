@@ -7,6 +7,7 @@ export { default as Game } from "./Game/Game";
 export { default as Toast } from "./Toast/Toast";
 export { default as EngineOptionsModal } from "./EngineOptionsModal/EngineOptionsModal";
 export { default as Card } from "./Card/Card";
+export { default as GameResultsModal } from "./GameResultsModal/GameResultsModal";
 export { default as Player } from "./Player/Player";
 export { default as StartGameModal } from "./StartGameModal/StartGameModal";
 export { default as GameEngineModal } from "./GameEngineModal/GameEngineModal";

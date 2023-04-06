@@ -1,6 +1,12 @@
 import React from "react";
 import styles from "@/styles/Game.module.css";
-import { Environment, Header, Loading, Toast } from "@/components";
+import {
+  Environment,
+  GameResultsModal,
+  Header,
+  Loading,
+  Toast,
+} from "@/components";
 import { CButton, CImage, CToaster } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
@@ -12,15 +18,16 @@ const Game: React.FC<Props> = ({}) => {
     isLoading: fetching,
     isFetched,
   } = trpc.gamer.gamer.useQuery();
-
+  const { mutate: mutateUpdateGamePosition } =
+    trpc.game.updateGamePositions.useMutation();
   const router = useRouter();
   const [toast, addToast] = React.useState(0);
+  const [openResults, setOpenResults] = React.useState<boolean>(false);
   const toaster = React.useRef();
-  const { setEnvironment, setGamersIds } = useEnvironmentStore(
+  const { setEnvironment, setGamersIds, environment } = useEnvironmentStore(
     (state) => state
   );
   const { gamer, setGamer } = useGamerStore((state) => state);
-
   const engineId: string = (router.query.id as string) || "";
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
     engineId,
@@ -104,6 +111,49 @@ const Game: React.FC<Props> = ({}) => {
     }
   );
 
+  trpc.game.onUpdateGamePositions.useSubscription(
+    {
+      engineId,
+      gamerId: gamer?.id || "",
+    },
+    {
+      onData: ({ message }) => {
+        addToast(
+          Toast({
+            message,
+            notificationTitle: "Game Engine Update",
+          }) as any
+        );
+      },
+    }
+  );
+  trpc.game.onGameOver.useSubscription(
+    { engineId },
+    {
+      onData: (data) => {
+        console.log({ data });
+        setOpenResults(true);
+      },
+    }
+  );
+  console.log({ environment });
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!environment?.players) {
+      const winner = environment.players.find(
+        (player) => player.cards.length === 0
+      );
+      if (!!winner) {
+        (async (env) => {
+          await mutateUpdateGamePosition({ env, winner });
+        })(environment);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [environment, mutateUpdateGamePosition]);
+
   const leaveEngine = async () => {
     await mutateLeaveEngine({ engineId });
     router.replace("/games");
@@ -135,7 +185,13 @@ const Game: React.FC<Props> = ({}) => {
   return (
     <div className={styles.game}>
       <Header />
-
+      {!!environment?.positions && (
+        <GameResultsModal
+          setOpen={setOpenResults}
+          open={openResults}
+          positions={environment.positions}
+        />
+      )}
       <CToaster ref={toaster as any} push={toast as any} placement="top-end" />
       <div className={styles.game__main}>
         <div className={styles.game__main__header}>

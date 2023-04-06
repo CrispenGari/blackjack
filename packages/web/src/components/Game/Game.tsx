@@ -8,6 +8,7 @@ import { CARDS_BACK, relativeTimeObject } from "@/constants";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
+import { useGamerStore } from "@/store";
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
 
@@ -19,6 +20,7 @@ interface Props {
 }
 const Game: React.FC<Props> = ({ engine }) => {
   const [open, setOpen] = React.useState<boolean>(false);
+  const { gamer } = useGamerStore((s) => s);
   return (
     <div
       className={styles.game}
@@ -39,7 +41,11 @@ const Game: React.FC<Props> = ({ engine }) => {
         </p>
         <p>
           <span>admin:</span>
-          <span>{engine.admin.nickname}</span>
+          <span>
+            {engine.admin.nickname === gamer?.nickname
+              ? "you"
+              : engine.admin.nickname}
+          </span>
         </p>
         <p>
           <span>created:</span>

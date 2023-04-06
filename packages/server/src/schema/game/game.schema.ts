@@ -16,6 +16,11 @@ export const playerSchema = z.object({
   updatedAt: z.date(),
   playerNumber: z.number(),
 });
+export const positionsSchema = z.object({
+  nickname: z.string(),
+  position: z.number(),
+  points: z.number(),
+});
 export const updateGameEnvironmentSchema = z.object({
   engineId: z.string(),
   blackJack: z.string(),
@@ -24,12 +29,18 @@ export const updateGameEnvironmentSchema = z.object({
   players: z.array(playerSchema),
   last: playerSchema.nullable(),
   next: playerSchema.nullable(),
+  positions: z.array(positionsSchema),
 });
 
 export const updateNextPlayerSchema = z.object({
   env: updateGameEnvironmentSchema,
   last: playerSchema.nullable(),
   next: playerSchema.nullable(),
+});
+
+export const updateGamePositionsSchema = z.object({
+  env: updateGameEnvironmentSchema,
+  winner: playerSchema,
 });
 
 export const matchCardsSchema = z.object({
@@ -50,7 +61,14 @@ export const startGameSchema = z.object({
 export const onGameStateChangedSchema = z.object({
   engineId: z.string(),
 });
+export const onGameOverSchema = z.object({
+  engineId: z.string(),
+});
 export const onGameStartSchema = z.object({
+  engineId: z.string(),
+  gamerId: z.string(),
+});
+export const onUpdateGamePositionsSchema = z.object({
   engineId: z.string(),
   gamerId: z.string(),
 });

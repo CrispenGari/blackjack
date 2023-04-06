@@ -12,6 +12,9 @@ import {
   playerSchema,
   updateNextPlayerSchema,
   matchCardsSchema,
+  updateGamePositionsSchema,
+  onUpdateGamePositionsSchema,
+  onGameOverSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
 import { shareCards, shuffle } from "../../utils";
@@ -39,8 +42,109 @@ export const gameRouter = router({
         };
       });
     }),
-  pickCard: publicProcedure.mutation(() => true),
-  play: publicProcedure.mutation(() => true),
+
+  onGameOver: publicProcedure
+    .input(onGameOverSchema)
+    .subscription(({ input: { engineId } }) => {
+      return observable<{ engine: Engine }>((emit) => {
+        const handleEvent = async ({ engine }: { engine: Engine }) => {
+          if (engineId === engine.id) {
+            emit.next({ engine });
+          }
+        };
+        ee.on(Events.ON_GAME_OVER, handleEvent);
+        return () => {
+          ee.off(Events.ON_GAME_OVER, handleEvent);
+        };
+      });
+    }),
+  onUpdateGamePositions: publicProcedure
+    .input(onUpdateGamePositionsSchema)
+    .subscription(({ input: { engineId, gamerId } }) => {
+      return observable<{ message: string }>((emit) => {
+        const handleEvent = async ({
+          engineId: id,
+          playerId,
+          nickname,
+        }: {
+          engineId: string;
+          playerId: string;
+          nickname: string;
+        }) => {
+          if (engineId === id) {
+            playerId === gamerId
+              ? emit.next({
+                  message:
+                    "You are out of the game, wait for other players to finish the game to get positions.",
+                })
+              : emit.next({ message: `${nickname} is out of the game.` });
+          }
+        };
+        ee.on(Events.ON_UPDATE_GAME_POSITIONS, handleEvent);
+        return () => {
+          ee.off(Events.ON_UPDATE_GAME_POSITIONS, handleEvent);
+        };
+      });
+    }),
+
+  updateGamePositions: publicProcedure
+    .input(updateGamePositionsSchema)
+    .mutation(({ input: { winner, env } }) => {
+      // players that are left in the game.
+      const players = env.players
+        .filter((player) => player.id !== winner.id)
+        .sort((a, b) => a.playerNumber - b.playerNumber)
+        .map((player, index) => ({
+          ...player,
+          playerNumber: index + 1,
+        }));
+
+      // get the next and previous player
+      const next =
+        players.length === 1 ? null : players[winner.playerNumber - 1];
+      const last =
+        players.length === 1 ? null : players[winner.playerNumber - 2];
+
+      const positions =
+        players.length === 1
+          ? [
+              ...env.positions,
+              {
+                nickname: winner.nickname,
+                points: 0,
+                position: env.positions.length + 1,
+              },
+              {
+                nickname: players[0].nickname,
+                points: 0,
+                position: env.positions.length + 2,
+              },
+            ]
+          : [
+              ...env.positions,
+              {
+                nickname: winner.nickname,
+                points: 0,
+                position: env.positions.length + 1,
+              },
+            ];
+      const payload: GamePayLoadType = {
+        ...env,
+        next,
+        last,
+        players: players.length === 1 ? [] : players,
+        positions,
+      };
+      ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
+      ee.emit(Events.ON_UPDATE_GAME_POSITIONS, {
+        engineId: env.engineId,
+        playerId: winner.id,
+        nickname: winner.nickname,
+      });
+      if (players.length === 1) {
+        ee.emit(Events.ON_GAME_OVER, payload);
+      }
+    }),
   updateGameEnvironment: publicProcedure
     .input(updateGameEnvironmentSchema)
     .mutation(({ input }) => {
@@ -155,6 +259,7 @@ export const gameRouter = router({
           played: [],
           last: null,
           next: { ...gamePlayers[0] },
+          positions: [],
         };
         ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
         ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
