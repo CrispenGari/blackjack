@@ -135,7 +135,7 @@ export const gameRouter = router({
         const payload: GamePayLoadType = {
           ...env,
           next,
-          last,
+          last: last || next,
           players: players.length === 1 ? [] : players,
           positions,
         };
