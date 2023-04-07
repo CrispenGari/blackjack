@@ -47,7 +47,7 @@ export const playerPoints = (players: number, position: number): number => {
       return -1;
     case 3:
       if (position === 1) return 16;
-      if (position === 3) return 0;
+      if (position === 2) return 0;
       return -1;
     default:
       if (position === 1) return 16;
