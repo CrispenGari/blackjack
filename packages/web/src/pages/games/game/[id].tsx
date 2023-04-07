@@ -142,6 +142,7 @@ const Game: React.FC<Props> = ({}) => {
       const winner = environment.players.find(
         (player) => player.cards.length === 0
       );
+      console.log({ winner });
       if (!!winner) {
         (async (env) => {
           await mutateUpdateGamePosition({ env, winner });
