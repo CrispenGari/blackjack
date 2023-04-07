@@ -46,7 +46,16 @@ const GameResultsModal: React.FC<Props> = ({ open, setOpen, positions }) => {
           </CTableHead>
           <CTableBody>
             {positions.map((pos) => (
-              <CTableRow color="primary" key={pos.nickname}>
+              <CTableRow
+                color={
+                  pos.points === -1
+                    ? "danger"
+                    : pos.points < 3
+                    ? "warning"
+                    : "primary"
+                }
+                key={pos.nickname}
+              >
                 <CTableHeaderCell scope="row">{pos.nickname}</CTableHeaderCell>
                 <CTableDataCell>{pos.position}</CTableDataCell>
                 <CTableDataCell>{pos.points}</CTableDataCell>

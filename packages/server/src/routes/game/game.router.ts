@@ -17,7 +17,7 @@ import {
   onGameOverSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
-import { shareCards, shuffle } from "../../utils";
+import { playerPoints, shareCards, shuffle } from "../../utils";
 
 export type GamePayLoadType = z.TypeOf<typeof updateGameEnvironmentSchema>;
 export type GamerType = z.TypeOf<typeof playerSchema>;
@@ -86,11 +86,12 @@ export const gameRouter = router({
         };
       });
     }),
-
   updateGamePositions: publicProcedure
     .input(updateGamePositionsSchema)
     .mutation(({ input: { winner, env } }) => {
       try {
+        const total: number = env.players.length + env.positions.length;
+
         // players that are left in the game.
         const players = env.players
           .filter((player) => player.id !== winner.id)
@@ -100,10 +101,13 @@ export const gameRouter = router({
             playerNumber: index + 1,
           }));
         // get the next and previous player
-        const next =
-          players.length === 1 ? null : players[winner.playerNumber - 1];
+
         const last =
           players.length === 1 ? null : players[winner.playerNumber - 2];
+        const next =
+          players.length === 1
+            ? null
+            : players[winner.playerNumber - 1] || last;
 
         const positions =
           players.length === 1
@@ -111,12 +115,12 @@ export const gameRouter = router({
                 ...env.positions,
                 {
                   nickname: winner.nickname,
-                  points: 0,
+                  points: playerPoints(total, env.positions.length + 1),
                   position: env.positions.length + 1,
                 },
                 {
                   nickname: players[0].nickname,
-                  points: 0,
+                  points: playerPoints(total, env.positions.length + 2),
                   position: env.positions.length + 2,
                 },
               ]
@@ -124,7 +128,7 @@ export const gameRouter = router({
                 ...env.positions,
                 {
                   nickname: winner.nickname,
-                  points: 0,
+                  points: playerPoints(total, env.positions.length + 1),
                   position: env.positions.length + 1,
                 },
               ];

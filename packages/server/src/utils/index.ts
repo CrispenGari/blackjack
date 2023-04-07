@@ -32,13 +32,25 @@ export const verifyJwt = async (token: string) => {
 };
 
 // 10 - 5 - 4 - 3 - 0
-export const playerPoints = (
-  players: GamerType[]
-): Array<GamerType & { points: number }> => {
-  const points = 22;
-  const total = players.length;
-  return players.map((player) => ({
-    ...player,
-    points: 0,
-  }));
+export const playerPoints = (players: number, position: number): number => {
+  switch (players) {
+    case 5:
+      if (position === 1) return 16;
+      if (position === 2) return 10;
+      if (position === 3) return 5;
+      if (position === 4) return 0;
+      return -1;
+    case 4:
+      if (position === 1) return 16;
+      if (position === 2) return 9;
+      if (position === 3) return 0;
+      return -1;
+    case 3:
+      if (position === 1) return 16;
+      if (position === 3) return 0;
+      return -1;
+    default:
+      if (position === 1) return 16;
+      return -1;
+  }
 };
