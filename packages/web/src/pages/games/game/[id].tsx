@@ -2,6 +2,7 @@ import React from "react";
 import styles from "@/styles/Game.module.css";
 import {
   Environment,
+  GameChat,
   GameResultsModal,
   Header,
   Loading,
@@ -135,7 +136,6 @@ const Game: React.FC<Props> = ({}) => {
       },
     }
   );
-  console.log({ environment });
   React.useEffect(() => {
     let mounted: boolean = true;
     if (mounted && !!environment?.players) {

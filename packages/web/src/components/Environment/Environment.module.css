@@ -1,10 +1,16 @@
 .environment {
   flex: 1;
   display: flex;
-  flex-direction: column;
   overflow-x: hidden;
+  justify-content: space-between;
 }
-
+.environment > div {
+  flex: 1;
+  display: flex;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
 .environment__top {
   flex: 0.6;
   display: flex;
@@ -110,4 +116,10 @@
   background-color: var(--main);
   top: 5px;
   right: 5px;
+}
+
+@media only screen and (max-width: 768px) {
+  .environment {
+    flex-direction: column;
+  }
 }

@@ -88,7 +88,7 @@ export const gameRouter = router({
     }),
   updateGamePositions: publicProcedure
     .input(updateGamePositionsSchema)
-    .mutation(({ input: { winner, env } }) => {
+    .mutation(async ({ input: { winner, env }, ctx: { prisma } }) => {
       try {
         const total: number = env.players.length + env.positions.length;
 
@@ -146,6 +146,13 @@ export const gameRouter = router({
           nickname: winner.nickname,
         });
         if (players.length === 1) {
+          await prisma.engine.update({
+            where: { id: payload.engineId },
+            data: {
+              active: true,
+              playing: false,
+            },
+          });
           ee.emit(Events.ON_GAME_OVER, payload);
         }
       } catch (error: any) {
@@ -219,7 +226,7 @@ export const gameRouter = router({
           return {
             error: { field: "engine", message: "Failed to find the engine." },
           };
-
+        await prisma.message.deleteMany({ where: { engineId: engine.id } });
         const nPlayers: number = engine.gamersIds.length;
         if (nPlayers < 2)
           return {

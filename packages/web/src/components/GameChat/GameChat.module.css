@@ -1,0 +1,93 @@
+.game__chat {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  padding-bottom: 10px;
+  max-height: 78vh;
+}
+.game__chat__header {
+  background-color: var(--primary);
+  padding: 5px;
+}
+.game__chat__header > h1 {
+  font-size: 1rem;
+  user-select: none;
+  color: white;
+  margin-bottom: 0;
+}
+.game__chat__main > p {
+  font-size: 0.8rem;
+  text-align: center;
+  user-select: none;
+}
+.game__chat__header > p {
+  color: gray;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.game__chat__main {
+  flex: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 5px;
+}
+.game__chat__main::-webkit-scrollbar {
+  display: none;
+}
+.game__chat > form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  background-color: transparent !important;
+}
+.game__chat > form > button {
+  width: fit-content !important;
+  background-color: var(--primary);
+  outline: none !important;
+  border: none !important;
+  transition: all 1s;
+  margin-left: 5px !important;
+}
+.game__chat > form > button:hover {
+  background-color: var(--secondary) !important;
+}
+.game__chat__main__message,
+.game__chat__main__message__me {
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  width: fit-content;
+  max-width: 80%;
+  user-select: none;
+  margin-bottom: 5px;
+}
+.game__chat__main__message__me {
+  align-self: flex-end;
+  margin-left: auto;
+}
+.game__chat__main__message > p,
+.game__chat__main__message__me > p {
+  margin: 0;
+}
+.game__chat__main__message > p:first-of-type,
+.game__chat__main__message__me > p:first-of-type {
+  background-color: var(--primary);
+  padding: 5px;
+  color: white;
+}
+.game__chat__main__message__me > p:first-of-type {
+  background-color: var(--secondary);
+}
+.game__chat__main__message > p:last-of-type,
+.game__chat__main__message__me > p:last-of-type {
+  font-size: 0.8rem;
+}
+@media only screen and (max-width: 768px) {
+  .game__chat {
+    max-width: unset;
+    margin-bottom: 30px;
+    max-height: 50vh;
+  }
+}

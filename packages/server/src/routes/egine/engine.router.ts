@@ -103,7 +103,13 @@ export const engineRouter = router({
             gamersIds: engine.gamersIds.filter((id) => id !== gamer.id),
           },
         });
-
+        await prisma.engine.update({
+          where: { id: engine.id },
+          data: {
+            active: true,
+            playing: false,
+          },
+        });
         ee.emit(Events.ON_GAMER_LEAVE, {
           engine: _engine,
           gamer,

@@ -13,7 +13,7 @@
 .game__main {
   width: 100%;
   background-color: var(--tertiary);
-  max-width: 1000px;
+  max-width: 1300px;
   margin: 0px auto;
   display: flex;
   flex-direction: column;
