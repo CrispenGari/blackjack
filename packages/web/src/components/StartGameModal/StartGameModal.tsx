@@ -13,7 +13,8 @@ import {
 } from "@coreui/react";
 import React from "react";
 import styles from "./StartGameModal.module.css";
-import { useEnvironmentStore } from "@/store";
+import { useEnvironmentStore, useGamerStore } from "@/store";
+import Oponent from "../Oponent/Oponent";
 interface Props {
   engine: Engine;
   open: boolean;
@@ -29,9 +30,11 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
     id: string;
     src: string;
   }>(CARDS_BACK[0]);
-  const { gamersIds } = useEnvironmentStore((s) => s);
-
-  const backCardsScrollRef = React.useRef();
+  const { environment } = useEnvironmentStore((s) => s);
+  const { gamer } = useGamerStore((s) => s);
+  const { data: gamers } = trpc.game.gamers.useQuery({
+    ids: engine.gamersIds.filter((id) => id !== gamer?.id),
+  });
   const onSubmit = async () => {
     await mutate({
       engineId: engine.id,
@@ -60,9 +63,20 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
         <CModalTitle>Start a New Game - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.start__game__modal__body}>
-        <h1>{gamersIds.length} more gamers</h1>
+        {!!gamers?.gamers.length && (
+          <h1>{gamers?.gamers.length} more gamers</h1>
+        )}
+        {!!gamers?.gamers.length && (
+          <div className={styles.start__game__modal__body__players}>
+            {gamers?.gamers
+              .filter((player) => player.id !== gamer?.id)
+              .map((player) => (
+                <Oponent key={player.id} player={player as any} />
+              ))}
+          </div>
+        )}
         <h2>Select Black Jack</h2>
-        <div className={styles.start__game__modal__body__cards}>
+        <div className={styles.start__game__modal__body__jacks}>
           {BLACK_JACKS.map((_jack) => (
             <div
               onClick={() => setJack(_jack)}
@@ -105,7 +119,7 @@ const StartGameModal: React.FC<Props> = ({ open, setOpen, engine }) => {
             color="danger"
             variant="solid"
           >
-            <p>{data.error.message}</p>
+            {data.error.message}
           </CAlert>
         )}
       </CModalBody>

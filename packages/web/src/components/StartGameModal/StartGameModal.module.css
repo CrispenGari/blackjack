@@ -32,43 +32,48 @@
   font-size: 1rem;
 }
 
-.start__game__modal__body__cards {
+.start__game__modal__body__cards,
+.start__game__modal__body__players,
+.start__game__modal__body__jacks {
   display: flex;
   align-items: center;
-  justify-content: space-around;
   overflow-y: hidden;
   overflow-x: scroll;
   padding: 0px 10px;
 }
 
-.start__game__modal__body__cards::-webkit-scrollbar {
+.start__game__modal__body__cards::-webkit-scrollbar,
+.start__game__modal__body__players::-webkit-scrollbar {
   height: 5px;
   border-radius: 999px;
 }
-.start__game__modal__body__cards:last-of-type {
-  justify-content: unset;
+.start__game__modal__body__jacks {
+  justify-content: center;
 }
 
 /* Track */
-.start__game__modal__body__cards::-webkit-scrollbar-track {
+.start__game__modal__body__cards::-webkit-scrollbar-track,
+.start__game__modal__body__players::-webkit-scrollbar-track {
   background: var(--tertiary);
 }
 
 /* Handle */
-.start__game__modal__body__cards::-webkit-scrollbar-thumb {
+.start__game__modal__body__cards::-webkit-scrollbar-thumb,
+.start__game__modal__body__players::-webkit-scrollbar-thumb {
   background: var(--main);
   cursor: pointer;
 }
 
 /* Handle on hover */
-.start__game__modal__body__cards::-webkit-scrollbar-thumb:hover {
+.start__game__modal__body__cards::-webkit-scrollbar-thumb:hover,
+.start__game__modal__body__players::-webkit-scrollbar-thumb:hover {
   background: var(--main);
 }
-.start__game__modal__body__cards:first-of-type::-webkit-scrollbar {
-  display: none;
+.start__game__modal__body__jacks::-webkit-scrollbar {
+  display: none !important;
 }
 .start__game__modal__body__cards:first-of-type {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 
 .start__game__modal__body__card,

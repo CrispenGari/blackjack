@@ -13,6 +13,7 @@
     "@blackjack/shared": "1.0.0",
     "@coreui/coreui": "^4.2.6",
     "@coreui/react": "^4.7.0",
+    "@rehooks/online-status": "^1.1.2",
     "@tanstack/react-query": "^4.24.4",
     "@trpc/client": "^10.10.0",
     "@trpc/react-query": "^10.10.0",

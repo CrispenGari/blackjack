@@ -130,7 +130,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
             ) : engine.playing ? (
               <p>the game has started</p>
             ) : (
-              <p>Only the admin of the environment can start the game.</p>
+              <p>only the admin of the environment can start the game.</p>
             )}
             <div className={styles.environment__top__center__cards}>
               {!!!environment?.played.length ? (

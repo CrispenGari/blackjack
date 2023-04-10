@@ -1,0 +1,30 @@
+.oponent {
+  background-color: var(--main);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  user-zoom: none;
+}
+.oponent > p {
+  margin-bottom: 0;
+  color: white;
+}
+
+.oponent__btn {
+  min-width: 100px !important;
+  transition: all 1s ease;
+  background-color: var(--secondary) !important;
+  border: none !important;
+  outline: none !important;
+  margin-top: 10px;
+}
+
+.oponent__btn:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
+}

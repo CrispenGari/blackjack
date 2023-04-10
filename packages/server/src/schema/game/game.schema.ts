@@ -57,6 +57,12 @@ export const startGameSchema = z.object({
   // J_OF_CLUBS // J_OF_SPADES
   backCover: z.string(),
 });
+export const removeGamerSchema = z.object({
+  gamerId: z.string(),
+});
+export const gamersSchema = z.object({
+  ids: z.array(z.string()),
+});
 
 export const onGameStateChangedSchema = z.object({
   engineId: z.string(),
@@ -65,6 +71,10 @@ export const onGameOverSchema = z.object({
   engineId: z.string(),
 });
 export const onGameStartSchema = z.object({
+  engineId: z.string(),
+  gamerId: z.string(),
+});
+export const onGamerRemovedSchema = z.object({
   engineId: z.string(),
   gamerId: z.string(),
 });

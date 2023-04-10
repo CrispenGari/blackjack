@@ -1,8 +1,8 @@
-import { Engine } from "@prisma/client";
+import { Engine, Gamer } from "@prisma/client";
 import { observable } from "@trpc/server/observable";
 import EventEmitter from "events";
 import { z } from "zod";
-import { CARDS, Events } from "../../constants";
+import { CARDS, Events, __cookieName__ } from "../../constants";
 import {
   CardType,
   onGameStateChangedSchema,
@@ -15,9 +15,12 @@ import {
   updateGamePositionsSchema,
   onUpdateGamePositionsSchema,
   onGameOverSchema,
+  removeGamerSchema,
+  onGamerRemovedSchema,
+  gamersSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
-import { playerPoints, shareCards, shuffle } from "../../utils";
+import { playerPoints, shareCards, shuffle, verifyJwt } from "../../utils";
 
 export type GamePayLoadType = z.TypeOf<typeof updateGameEnvironmentSchema>;
 export type GamerType = z.TypeOf<typeof playerSchema>;
@@ -39,6 +42,35 @@ export const gameRouter = router({
         ee.on(Events.ON_GAME_START, handleEvent);
         return () => {
           ee.off(Events.ON_GAME_START, handleEvent);
+        };
+      });
+    }),
+
+  onGamerRemoved: publicProcedure
+    .input(onGamerRemovedSchema)
+    .subscription(({ input: { engineId, gamerId } }) => {
+      return observable<{ message: string; gamer: Gamer }>((emit) => {
+        const handleEvent = async ({
+          engine,
+          gamer,
+        }: {
+          engine: Engine;
+          gamer: Gamer;
+        }) => {
+          if (engineId === engine.id) {
+            emit.next({
+              message:
+                gamer.id === gamerId
+                  ? `you was removed from game engine "${engine.name}".`
+                  : `${gamer.nickname} was removed from this engine.`,
+              gamer,
+            });
+          }
+        };
+
+        ee.on(Events.ON_GAMER_REMOVED, handleEvent);
+        return () => {
+          ee.off(Events.ON_GAMER_REMOVED, handleEvent);
         };
       });
     }),
@@ -203,6 +235,58 @@ export const gameRouter = router({
       };
       ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
     }),
+  removeGamer: publicProcedure
+    .input(removeGamerSchema)
+    .mutation(async ({ input: { gamerId }, ctx: { prisma, req } }) => {
+      const jwt = req.cookies[__cookieName__];
+      if (!!!jwt) return false;
+      try {
+        const payload = await verifyJwt(jwt);
+        const gamer = await prisma.gamer.findFirst({
+          where: { id: payload.id },
+        });
+        if (!!!gamer) return false;
+        const engine = await prisma.engine.findFirst({
+          where: {
+            adminId: gamer.id,
+          },
+        });
+
+        if (!!!engine) return false;
+        await prisma.engine.update({
+          where: { id: engine.id },
+          data: {
+            gamersIds: engine.gamersIds.filter((id) => id !== gamerId),
+            full: false,
+          },
+        });
+        const engines = await prisma.engine.findMany({
+          include: { admin: true },
+        });
+
+        const _gamer = await prisma.gamer.findFirst({ where: { id: gamerId } });
+
+        if (_gamer) {
+          ee.emit(Events.ON_GAMER_REMOVED, {
+            engine,
+            gamer: _gamer,
+          });
+        }
+        ee.emit(Events.ON_ENGINES_STATE_CHANGE, engines);
+        ee.emit(Events.ON_ENGINE_STATE_CHANGE, engine);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }),
+  gamers: publicProcedure
+    .input(gamersSchema)
+    .query(async ({ ctx: { req, prisma }, input: { ids } }) => {
+      const gamers = await prisma.gamer.findMany({
+        where: { id: { in: ids } },
+      });
+      return { gamers };
+    }),
   startGame: publicProcedure
     .input(startGameSchema)
     .mutation(
@@ -259,7 +343,7 @@ export const gameRouter = router({
             playerNumber: index + 1,
           }));
 
-        await prisma.engine.update({
+        const _engine = await prisma.engine.update({
           where: { id: engine.id },
           data: {
             active: true,
@@ -277,7 +361,7 @@ export const gameRouter = router({
           positions: [],
         };
         ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
-        ee.emit(Events.ON_ENGINE_STATE_CHANGE, payload);
+        ee.emit(Events.ON_ENGINE_STATE_CHANGE, _engine);
         ee.emit(Events.ON_GAME_START, { engine });
         return {
           blackJack,

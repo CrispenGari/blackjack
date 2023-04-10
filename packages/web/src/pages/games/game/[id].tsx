@@ -12,6 +12,7 @@ import { CButton, CImage, CToaster } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useEnvironmentStore, useGamerStore } from "@/store";
+
 interface Props {}
 const Game: React.FC<Props> = ({}) => {
   const {
@@ -128,6 +129,26 @@ const Game: React.FC<Props> = ({}) => {
       },
     }
   );
+  trpc.game.onGamerRemoved.useSubscription(
+    {
+      engineId,
+      gamerId: gamer?.id || "",
+    },
+    {
+      onData: async ({ gamer: me, message }) => {
+        addToast(
+          Toast({
+            message,
+            notificationTitle: "Gamer Removed",
+          }) as any
+        );
+        await refetch();
+        if (me.id === gamer?.id) {
+          router.replace("/games");
+        }
+      },
+    }
+  );
   trpc.game.onGameOver.useSubscription(
     { engineId },
     {
@@ -142,7 +163,6 @@ const Game: React.FC<Props> = ({}) => {
       const winner = environment.players.find(
         (player) => player.cards.length === 0
       );
-      console.log({ winner });
       if (!!winner) {
         (async (env) => {
           await mutateUpdateGamePosition({ env, winner });
@@ -205,7 +225,6 @@ const Game: React.FC<Props> = ({}) => {
                 : 0}{" "}
               opponents.
             </p>
-            <p>🎈</p>
           </div>
           <CButton onClick={leaveEngine} disabled={leaving}>
             Leave
