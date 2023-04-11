@@ -49,7 +49,6 @@ export const gamerRouter = router({
         },
       };
     } catch (error) {
-      console.log({ error });
       return { gamer: null };
     }
   }),
@@ -186,7 +185,6 @@ export const gamerRouter = router({
       });
       return true;
     } catch (error) {
-      console.log({ error });
       return false;
     }
   }),

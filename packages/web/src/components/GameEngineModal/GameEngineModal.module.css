@@ -29,3 +29,11 @@
 .game__engine__modal__close__btn {
   background-color: var(--tertiary) !important;
 }
+.game__engine__modal__body__players {
+  display: flex;
+  flex-wrap: wrap;
+}
+.game__engine__modal__body > h1 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}

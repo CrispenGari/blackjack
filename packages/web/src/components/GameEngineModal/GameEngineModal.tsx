@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/router";
 import React from "react";
 import styles from "./GameEngineModal.module.css";
+import Oponent from "../Oponent/Oponent";
 interface Props {
   engine: Engine;
   open: boolean;
@@ -22,12 +23,15 @@ interface Props {
 const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
   const router = useRouter();
   const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
+  const { gamer } = useGamerStore((s) => s);
+  const { data: gamers } = trpc.game.gamers.useQuery({
+    ids: engine.gamersIds.filter((id) => id !== gamer?.id),
+  });
   const {
     data: deleteEngineData,
     mutate: mutateDeleteEngine,
     isLoading: deleting,
   } = trpc.engine.deleteEngine.useMutation();
-  const { gamer } = useGamerStore((s) => s);
   const onSubmit = async () => {
     await mutate({ engineId: engine.id });
   };
@@ -54,7 +58,21 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
         <CModalTitle>Join Game Environment - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.game__engine__modal__body}>
-        <h1>{engine.gamersIds.length} more gamers in the engine.</h1>
+        <h1>
+          {gamers?.gamers.length}{" "}
+          {gamers?.gamers.length === 1 ? "opponent" : "opponents"} in the
+          engine.
+        </h1>
+        <div className={styles.game__engine__modal__body__players}>
+          {gamers?.gamers.map((player) => (
+            <Oponent
+              key={player.id}
+              player={player as any}
+              adminId={engine.adminId}
+            />
+          ))}
+        </div>
+
         {!!data?.error && (
           <CAlert
             style={{ marginTop: 10, userSelect: "none" }}

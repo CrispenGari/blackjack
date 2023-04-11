@@ -72,7 +72,6 @@ export const messageRouter = router({
             msg,
           };
         } catch (error) {
-          console.log({ error });
           return {
             error: {
               field: "server",
