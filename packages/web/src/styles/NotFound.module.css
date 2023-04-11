@@ -1,0 +1,39 @@
+.not__found {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--main);
+  user-select: none;
+  user-zoom: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+.not__found > h1 {
+  color: white;
+  font-size: 5rem;
+}
+.not__found > p {
+  color: white;
+}
+.not__found > img {
+  width: 100px;
+  -webkit-user-drag: none;
+  margin: 20px 0;
+  transition: all 1s ease;
+  animation: animate 1s ease 0.2s infinite alternate-reverse forwards;
+}
+.not__found__links > a {
+  font-size: 1.2rem;
+  user-select: none;
+  color: var(--tertiary);
+}
+@keyframes animate {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.2);
+  }
+}
