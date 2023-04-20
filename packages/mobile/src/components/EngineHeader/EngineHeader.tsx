@@ -4,11 +4,11 @@ import { COLORS, FONTS } from "../../constants";
 import { styles } from "../../styles";
 import CreateEngineBottomSheet from "../CreateEngineBottomSheet/CreateEngineBottomSheet";
 
-const EngineHeader = () => {
-  const [open, setOpen] = React.useState<boolean>(false);
-
-  const toggleCreateEngineBottomSheet = () => setOpen((state) => !state);
-
+interface Props {
+  open: boolean;
+  toggle: () => void;
+}
+const EngineHeader: React.FunctionComponent<Props> = ({ open, toggle }) => {
   return (
     <View
       style={{
@@ -51,15 +51,12 @@ const EngineHeader = () => {
             maxWidth: 80,
           },
         ]}
-        onPress={toggleCreateEngineBottomSheet}
+        onPress={toggle}
       >
         <Text style={[styles.button__text, { color: COLORS.white }]}>New</Text>
       </TouchableOpacity>
 
-      <CreateEngineBottomSheet
-        toggle={toggleCreateEngineBottomSheet}
-        open={open}
-      />
+      <CreateEngineBottomSheet toggle={toggle} open={open} />
     </View>
   );
 };

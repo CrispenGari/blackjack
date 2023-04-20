@@ -20,6 +20,9 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   const [engineToOpen, setEngineToOpen] = React.useState<
     EngineType | undefined
   >();
+  const [openCreateEngineBottomSheet, setOpenCreateEngineBottomSheet] =
+    React.useState<boolean>(false);
+
   trpc.engine.onEnginesStateChanged.useSubscription(undefined, {
     onData: async (data) => {
       await refetch();
@@ -27,6 +30,8 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   });
   const { gamer } = useGamerStore((state) => state);
   const toggle = () => setEngineToOpen(undefined);
+  const toggleCreateEngineBottomSheet = () =>
+    setOpenCreateEngineBottomSheet((state) => !state);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +54,10 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <EngineHeader />
+      <EngineHeader
+        open={openCreateEngineBottomSheet}
+        toggle={toggleCreateEngineBottomSheet}
+      />
       {isLoading ? (
         <Loading loadedFont={true} bg={COLORS.secondary} />
       ) : (
@@ -67,6 +75,7 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
+                onPress={toggleCreateEngineBottomSheet}
                 style={[
                   styles.button,
                   {
