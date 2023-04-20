@@ -6,7 +6,7 @@ const Stack = createStackNavigator<AuthParamList>();
 const Auth = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Landing"
+      initialRouteName="SignIn"
       screenOptions={{
         headerShown: false,
       }}
