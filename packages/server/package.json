@@ -6,9 +6,8 @@
   "author": "CrispenGari",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "test": "jest",
-    "start": "ts-node src/server.ts"
+    "start": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start:tunnel": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^8.3.0",

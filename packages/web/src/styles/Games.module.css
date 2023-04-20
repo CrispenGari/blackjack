@@ -102,6 +102,9 @@
   overflow-x: hidden;
   justify-content: center;
 }
+.games__main__games::-webkit-scrollbar {
+  display: none !important;
+}
 .games__main__games__no__engine {
   display: flex;
   flex-direction: column;

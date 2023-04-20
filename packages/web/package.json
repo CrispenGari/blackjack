@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@blackjack/server": "1.0.0",
-    "@blackjack/shared": "1.0.0",
     "@coreui/coreui": "^4.2.6",
     "@coreui/react": "^4.7.0",
     "@rehooks/online-status": "^1.1.2",
