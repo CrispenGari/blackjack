@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
-import { COLORS, FONTS } from "../../../constants";
+import { COLORS, FONTS, TOKEN_KEY } from "../../../constants";
 import {
+  DotCircular,
   Engine,
   EngineHeader,
   JoinEngineBottomSheet,
@@ -12,6 +13,7 @@ import { trpc } from "../../../utils/trpc";
 import { useGamerStore } from "../../../store";
 import { styles } from "../../../styles";
 import { Engine as EngineType } from "@blackjack/server";
+import { del } from "../../../utils";
 
 const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   navigation,
@@ -22,16 +24,25 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   >();
   const [openCreateEngineBottomSheet, setOpenCreateEngineBottomSheet] =
     React.useState<boolean>(false);
-
   trpc.engine.onEnginesStateChanged.useSubscription(undefined, {
     onData: async (data) => {
       await refetch();
     },
   });
-  const { gamer } = useGamerStore((state) => state);
+  const { mutateAsync, isLoading: signingOut } =
+    trpc.gamer.logout.useMutation();
+  const { setGamer } = useGamerStore((state) => state);
   const toggle = () => setEngineToOpen(undefined);
   const toggleCreateEngineBottomSheet = () =>
     setOpenCreateEngineBottomSheet((state) => !state);
+  const logout = () => {
+    mutateAsync().then(async (success) => {
+      if (success) {
+        await del(TOKEN_KEY);
+        setGamer(null);
+      }
+    });
+  };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,8 +60,50 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
         fontSize: 25,
         color: COLORS.white,
       },
+      headerLeft: () => (
+        <Image
+          source={{
+            uri: Image.resolveAssetSource(
+              require("../../../../assets/logo.png")
+            ).uri,
+          }}
+          style={{
+            width: 50,
+            height: 50,
+            marginLeft: 10,
+            resizeMode: "contain",
+          }}
+        />
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={logout}
+          disabled={isLoading}
+          style={[
+            styles.button,
+            {
+              backgroundColor: COLORS.secondary,
+              padding: 5,
+              borderRadius: 5,
+              marginRight: 5,
+              maxWidth: 100,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.button__text,
+              { color: COLORS.white, marginRight: signingOut ? 5 : 0 },
+            ]}
+          >
+            Sign Out
+          </Text>
+          {signingOut && <DotCircular color={COLORS.main} size={10} />}
+        </TouchableOpacity>
+      ),
     });
-  }, [navigation]);
+  }, [navigation, signingOut]);
 
   return (
     <View style={{ flex: 1 }}>

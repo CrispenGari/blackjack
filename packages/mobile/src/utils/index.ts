@@ -17,3 +17,11 @@ export const retrieve = async (key: string): Promise<string | null> => {
     return null;
   }
 };
+export const del = async (key: string): Promise<boolean> => {
+  try {
+    await AsyncStorage.removeItem(key);
+    return true;
+  } catch (error: any) {
+    return false;
+  }
+};

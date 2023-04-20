@@ -45,6 +45,7 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
   const joinEngine = () => {
     mutateAsync({ engineId: engine.id }).then(({ engine }) => {
       if (!!engine) {
+        toggle();
         navigation.navigate("Engine", {
           engineId: engine.id,
         });
