@@ -8,3 +8,4 @@ export { default as JoinEngineBottomSheet } from "./JoinEngineBottomSheet/JoinEn
 export { default as AppStackBackButton } from "./AppStackBackButton/AppStackBackButton";
 export { default as DotCircular } from "./DotCircular/DotCircular";
 export { default as Oponent } from "./Oponent/Oponent";
+export { default as CreateEngineBottomSheet } from "./CreateEngineBottomSheet/CreateEngineBottomSheet";

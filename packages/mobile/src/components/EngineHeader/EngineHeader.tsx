@@ -2,9 +2,13 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants";
 import { styles } from "../../styles";
+import CreateEngineBottomSheet from "../CreateEngineBottomSheet/CreateEngineBottomSheet";
 
 const EngineHeader = () => {
   const [open, setOpen] = React.useState<boolean>(false);
+
+  const toggleCreateEngineBottomSheet = () => setOpen((state) => !state);
+
   return (
     <View
       style={{
@@ -47,9 +51,15 @@ const EngineHeader = () => {
             maxWidth: 80,
           },
         ]}
+        onPress={toggleCreateEngineBottomSheet}
       >
         <Text style={[styles.button__text, { color: COLORS.white }]}>New</Text>
       </TouchableOpacity>
+
+      <CreateEngineBottomSheet
+        toggle={toggleCreateEngineBottomSheet}
+        open={open}
+      />
     </View>
   );
 };

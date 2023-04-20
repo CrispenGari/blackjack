@@ -17,6 +17,7 @@ import { useGamerStore } from "../../store";
 import { trpc } from "../../utils/trpc";
 import Oponent from "../Oponent/Oponent";
 import Message from "../Message/Message";
+import DotCircular from "../DotCircular/DotCircular";
 interface Props {
   engine: Engine;
   toggle: () => void;
@@ -36,29 +37,28 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
   });
   const {
     data: deleteEngineData,
-    mutate: mutateDeleteEngine,
+    mutateAsync: mutateDeleteEngine,
     isLoading: deleting,
   } = trpc.engine.deleteEngine.useMutation();
-  const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
+  const { data, mutateAsync, isLoading } = trpc.engine.joinEngine.useMutation();
 
-  const joinEngine = async () => {
-    await mutate({ engineId: engine.id });
+  const joinEngine = () => {
+    mutateAsync({ engineId: engine.id }).then(({ engine }) => {
+      if (!!engine) {
+        navigation.navigate("Engine", {
+          engineId: engine.id,
+        });
+      }
+    });
   };
-  const deleteEngine = async () => {
-    await mutateDeleteEngine({ engineId: engine.id });
+  const deleteEngine = () => {
+    mutateDeleteEngine({ engineId: engine.id }).then(({ engine }) => {
+      if (!!engine) {
+        toggle();
+      }
+    });
   };
 
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!data?.engine) {
-      navigation.navigate("Engine", {
-        engineId: data.engine.id,
-      });
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [data, navigation]);
   return (
     <BottomSheet
       visible={!!engine}
@@ -142,9 +142,15 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
               onPress={deleteEngine}
               disabled={isLoading || deleting}
             >
-              <Text style={[styles.button__text, { color: "black" }]}>
+              <Text
+                style={[
+                  styles.button__text,
+                  { color: "black", marginRight: deleting ? 5 : 0 },
+                ]}
+              >
                 Delete Engine
               </Text>
+              {deleting && <DotCircular color={COLORS.secondary} size={10} />}
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -162,9 +168,15 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
               },
             ]}
           >
-            <Text style={[styles.button__text, { color: COLORS.white }]}>
+            <Text
+              style={[
+                styles.button__text,
+                { color: COLORS.white, marginRight: isLoading ? 5 : 0 },
+              ]}
+            >
               Join
             </Text>
+            {isLoading && <DotCircular color={COLORS.secondary} size={10} />}
           </TouchableOpacity>
         </View>
       </SafeAreaView>

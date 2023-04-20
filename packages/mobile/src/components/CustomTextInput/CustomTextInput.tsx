@@ -43,6 +43,7 @@ const CustomTextInput: React.FunctionComponent<Partial<Props>> = ({
   return (
     <TextInput
       placeholder={placeholder}
+      placeholderTextColor={"gray"}
       style={[
         {
           backgroundColor: "#f5f5f5",

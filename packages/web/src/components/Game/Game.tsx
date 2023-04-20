@@ -36,7 +36,7 @@ const Game: React.FC<Props> = ({ engine }) => {
       />
       <div className={styles.game__engine__details}>
         <p>
-          <span>engine name:</span>
+          <span>engine:</span>
           <span>{engine.name}</span>
         </p>
         <p>
