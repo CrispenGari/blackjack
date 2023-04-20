@@ -4,6 +4,7 @@ export { default as Message } from "./Message/Message";
 export { default as Divider } from "./Divider/Divider";
 export { default as Engine } from "./Engine/Engine";
 export { default as EngineHeader } from "./EngineHeader/EngineHeader";
+export { default as EnginesHeader } from "./EnginesHeader/EnginesHeader";
 export { default as JoinEngineBottomSheet } from "./JoinEngineBottomSheet/JoinEngineBottomSheet";
 export { default as AppStackBackButton } from "./AppStackBackButton/AppStackBackButton";
 export { default as DotCircular } from "./DotCircular/DotCircular";

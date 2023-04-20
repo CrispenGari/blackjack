@@ -1,14 +1,38 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants";
 import { styles } from "../../styles";
-import CreateEngineBottomSheet from "../CreateEngineBottomSheet/CreateEngineBottomSheet";
+import { Engine } from "@blackjack/server";
+import { trpc } from "../../utils/trpc";
+import DotCircular from "../DotCircular/DotCircular";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { AppParamList } from "../../params";
 
 interface Props {
-  open: boolean;
-  toggle: () => void;
+  engine: Engine;
+  navigation: StackNavigationProp<AppParamList, "Engine">;
 }
-const EngineHeader: React.FunctionComponent<Props> = ({ open, toggle }) => {
+const EngineHeader: React.FunctionComponent<Props> = ({
+  engine,
+  navigation,
+}) => {
+  const { mutateAsync: mutateLeaveEngine, isLoading: leaving } =
+    trpc.engine.leaveEngine.useMutation();
+  const leaveEngine = () => {
+    mutateLeaveEngine({ engineId: engine.id }).then(({ engine, error }) => {
+      if (!!engine) {
+        navigation.replace("Engines");
+      }
+      if (!!error) {
+        Alert.alert(
+          "blackjack",
+          error.message,
+          [{ style: "destructive", text: "OK" }],
+          { cancelable: false }
+        );
+      }
+    });
+  };
   return (
     <View
       style={{
@@ -27,7 +51,7 @@ const EngineHeader: React.FunctionComponent<Props> = ({ open, toggle }) => {
             fontSize: 20,
           }}
         >
-          GAME ENGINES
+          ENGINE: {engine.name.toUpperCase()}
         </Text>
         <Text
           style={{
@@ -35,8 +59,9 @@ const EngineHeader: React.FunctionComponent<Props> = ({ open, toggle }) => {
             fontFamily: FONTS.regular,
           }}
         >
-          To play the games, please select the engine you want to join or create
-          one.
+          You are playing blackjack from engine {engine.name} which contains{" "}
+          {engine.gamersIds.length || 0} players and have{" "}
+          {engine.gamersIds.length ? engine.gamersIds.length - 1 : 0} opponents.
         </Text>
       </View>
       <TouchableOpacity
@@ -51,12 +76,18 @@ const EngineHeader: React.FunctionComponent<Props> = ({ open, toggle }) => {
             maxWidth: 80,
           },
         ]}
-        onPress={toggle}
+        onPress={leaveEngine}
       >
-        <Text style={[styles.button__text, { color: COLORS.white }]}>New</Text>
+        <Text
+          style={[
+            styles.button__text,
+            { color: COLORS.white, marginRight: leaving ? 5 : 0 },
+          ]}
+        >
+          Leave
+        </Text>
+        {leaving && <DotCircular color={COLORS.main} size={10} />}
       </TouchableOpacity>
-
-      <CreateEngineBottomSheet toggle={toggle} open={open} />
     </View>
   );
 };

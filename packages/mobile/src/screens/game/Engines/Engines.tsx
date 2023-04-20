@@ -5,7 +5,7 @@ import { COLORS, FONTS, TOKEN_KEY } from "../../../constants";
 import {
   DotCircular,
   Engine,
-  EngineHeader,
+  EnginesHeader,
   JoinEngineBottomSheet,
   Loading,
 } from "../../../components";
@@ -107,7 +107,7 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <EngineHeader
+      <EnginesHeader
         open={openCreateEngineBottomSheet}
         toggle={toggleCreateEngineBottomSheet}
       />
