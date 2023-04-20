@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "../../../constants";
+import { COLORS, TOKEN_KEY } from "../../../constants";
 import { styles } from "../../../styles";
 import { AuthNavProps } from "../../../params";
 import * as Animatable from "react-native-animatable";
@@ -19,6 +19,9 @@ import {
   DotCircular,
   Message,
 } from "../../../components";
+import { trpc } from "../../../utils/trpc";
+import { useGamerStore } from "../../../store";
+import { store } from "../../../utils";
 
 const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
   navigation,
@@ -30,6 +33,34 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
     nickname: "",
     password: "",
   });
+  const { setGamer } = useGamerStore((state) => state);
+  const { data, mutate, isLoading } = trpc.gamer.login.useMutation();
+  const login = async () => {
+    await mutate({ nickname, password, web: false });
+  };
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!data?.gamer) {
+      setGamer(data.gamer);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [setGamer, data]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!data?.jwt) {
+      (async () => {
+        await store(TOKEN_KEY, data.jwt);
+      })();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [data]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
       <LinearGradient
@@ -142,10 +173,12 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
             onChangeText={(text) =>
               setForm((state) => ({ ...state, password: text }))
             }
+            onSubmitEditing={login}
           />
-          <Message error message="nickname is invalid" />
+          {!!data?.error && <Message error message={data.error.message} />}
           <TouchableOpacity
             activeOpacity={0.7}
+            onPress={login}
             style={[
               styles.button,
               {
@@ -161,12 +194,12 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
             <Text
               style={[
                 styles.button__text,
-                { color: COLORS.white, marginRight: 10 },
+                { color: COLORS.white, marginRight: isLoading ? 10 : 0 },
               ]}
             >
               Sign In
             </Text>
-            <DotCircular color={COLORS.secondary} size={10} />
+            {isLoading && <DotCircular color={COLORS.secondary} size={10} />}
           </TouchableOpacity>
           <Divider title="Don't have a gaming account?" />
           <TouchableOpacity

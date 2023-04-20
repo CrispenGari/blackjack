@@ -10,7 +10,8 @@ import {
 import { trpc } from "../utils/trpc";
 import superjson from "superjson";
 import { AppRouter } from "@blackjack/server";
-import { engrokDomain } from "../constants";
+import { TOKEN_KEY, engrokDomain } from "../constants";
+import { retrieve } from "../utils";
 interface Props {
   children: React.ReactNode;
 }
@@ -43,7 +44,8 @@ const getEndingLink = () => {
         });
       },
       headers: async () => {
-        const token = "";
+        const token = await retrieve(TOKEN_KEY);
+        console.log({ token });
         return token
           ? {
               Authorization: `Bearer ${token}`,

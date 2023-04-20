@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "../../../constants";
+import { COLORS, TOKEN_KEY } from "../../../constants";
 import { styles } from "../../../styles";
 import { AuthNavProps } from "../../../params";
 import * as Animatable from "react-native-animatable";
@@ -19,10 +19,15 @@ import {
   DotCircular,
   Message,
 } from "../../../components";
+import { useGamerStore } from "../../../store";
+import { trpc } from "../../../utils/trpc";
+import { store } from "../../../utils";
 
 const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
   navigation,
 }) => {
+  const { setGamer } = useGamerStore((state) => state);
+  const { mutate, isLoading, data } = trpc.gamer.register.useMutation();
   const [{ nickname, password, confirmPassword }, setForm] = React.useState<{
     nickname: string;
     password: string;
@@ -32,6 +37,38 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
     password: "",
     confirmPassword: "",
   });
+
+  const register = async () => {
+    await mutate({
+      confirmPassword,
+      password,
+      nickname,
+      web: false,
+    });
+  };
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!data?.gamer) {
+      setGamer(data.gamer);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [setGamer, data]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!data?.jwt) {
+      (async () => {
+        await store(TOKEN_KEY, data.jwt);
+      })();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [data]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
       <LinearGradient
@@ -161,10 +198,12 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
             onChangeText={(text) =>
               setForm((state) => ({ ...state, confirmPassword: text }))
             }
+            onSubmitEditing={register}
           />
-          <Message error message="nickname is invalid" />
+          {!!data?.error && <Message error message={data.error.message} />}
           <TouchableOpacity
             activeOpacity={0.7}
+            onPress={register}
             style={[
               styles.button,
               {
@@ -180,12 +219,12 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
             <Text
               style={[
                 styles.button__text,
-                { color: COLORS.white, marginRight: 10 },
+                { color: COLORS.white, marginRight: isLoading ? 10 : 0 },
               ]}
             >
               Sign Up
             </Text>
-            <DotCircular color={COLORS.secondary} size={10} />
+            {isLoading && <DotCircular color={COLORS.secondary} size={10} />}
           </TouchableOpacity>
           <Divider title="Already have a gaming account?" />
           <TouchableOpacity
