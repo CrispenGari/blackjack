@@ -34,8 +34,10 @@ export const gamerRouter = router({
       });
     }),
   gamer: publicProcedure.query(async ({ ctx: { prisma, req } }) => {
-    const jwt = req.cookies[__cookieName__];
-
+    const jwt =
+      req.cookies[__cookieName__] ||
+      req.headers.authorization?.split(/\s/)[1] ||
+      "";
     if (!!!jwt) return { gamer: null };
     try {
       const payload = await verifyJwt(jwt);
@@ -169,7 +171,10 @@ export const gamerRouter = router({
       }
     ),
   logout: publicProcedure.mutation(async ({ ctx: { req, res, prisma } }) => {
-    const jwt = req.cookies[__cookieName__];
+    const jwt =
+      req.cookies[__cookieName__] ||
+      req.headers.authorization?.split(/\s/)[1] ||
+      "";
     if (!!!jwt) return false;
     try {
       const payload = await verifyJwt(jwt);

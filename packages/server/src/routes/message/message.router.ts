@@ -18,7 +18,10 @@ export const messageRouter = router({
     .input(sendMessageSchema)
     .mutation(
       async ({ input: { engineId, message }, ctx: { prisma, req } }) => {
-        const jwt = req.cookies[__cookieName__];
+        const jwt =
+          req.cookies[__cookieName__] ||
+          req.headers.authorization?.split(/\s/)[1] ||
+          "";
         if (!!!jwt)
           return {
             error: {

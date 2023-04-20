@@ -64,7 +64,10 @@ export const engineRouter = router({
   leaveEngine: publicProcedure
     .input(leaveEngineSchema)
     .mutation(async ({ ctx: { prisma, req }, input: { engineId } }) => {
-      const jwt = req.cookies[__cookieName__];
+      const jwt =
+        req.cookies[__cookieName__] ||
+        req.headers.authorization?.split(/\s/)[1] ||
+        "";
       if (!!!jwt)
         return {
           error: {
@@ -131,7 +134,10 @@ export const engineRouter = router({
   joinEngine: publicProcedure
     .input(joinEngineSchema)
     .mutation(async ({ ctx: { prisma, req }, input: { engineId } }) => {
-      const jwt = req.cookies[__cookieName__];
+      const jwt =
+        req.cookies[__cookieName__] ||
+        req.headers.authorization?.split(/\s/)[1] ||
+        "";
       if (!!!jwt)
         return {
           error: {
@@ -190,7 +196,10 @@ export const engineRouter = router({
   createEngine: publicProcedure
     .input(createEngineSchema)
     .mutation(async ({ ctx: { req, prisma }, input: { name, cover } }) => {
-      const jwt = req.cookies[__cookieName__];
+      const jwt =
+        req.cookies[__cookieName__] ||
+        req.headers.authorization?.split(/\s/)[1] ||
+        "";
       if (!!!jwt)
         return {
           error: {
@@ -308,7 +317,10 @@ export const engineRouter = router({
             message: "engine id is required, client error!!",
           },
         };
-      const jwt = req.cookies[__cookieName__];
+      const jwt =
+        req.cookies[__cookieName__] ||
+        req.headers.authorization?.split(/\s/)[1] ||
+        "";
       if (!!!jwt)
         return {
           error: {

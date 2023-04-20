@@ -238,7 +238,10 @@ export const gameRouter = router({
   removeGamer: publicProcedure
     .input(removeGamerSchema)
     .mutation(async ({ input: { gamerId }, ctx: { prisma, req } }) => {
-      const jwt = req.cookies[__cookieName__];
+      const jwt =
+      req.cookies[__cookieName__] ||
+      req.headers.authorization?.split(/\s/)[1] ||
+      "";
       if (!!!jwt) return false;
       try {
         const payload = await verifyJwt(jwt);
