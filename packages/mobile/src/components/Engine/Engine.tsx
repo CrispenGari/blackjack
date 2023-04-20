@@ -4,8 +4,9 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import { Engine as EngineType, Gamer } from "@blackjack/server";
-import { CARDS_BACK, relativeTimeObject } from "../../constants";
+import { CARDS_BACK, COLORS, relativeTimeObject } from "../../constants";
 import { useGamerStore } from "../../store";
+import { styles } from "../../styles";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -15,11 +16,22 @@ dayjs.updateLocale("en", {
 });
 interface Props {
   engine: EngineType & { admin: Gamer };
+  onPress: () => void;
 }
-const Engine: React.FunctionComponent<Props> = ({ engine }) => {
+const Engine: React.FunctionComponent<Props> = ({ engine, onPress }) => {
   const { gamer } = useGamerStore((s) => s);
   return (
-    <TouchableOpacity style={{ width: 130, height: 100 }} activeOpacity={0.7}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        width: 130,
+        height: 100,
+        backgroundColor: COLORS.white,
+        margin: 5,
+        borderRadius: 5,
+      }}
+      activeOpacity={0.7}
+    >
       <Image
         source={{
           uri: Image.resolveAssetSource(
@@ -28,7 +40,13 @@ const Engine: React.FunctionComponent<Props> = ({ engine }) => {
         }}
         style={{ height: 100, resizeMode: "contain" }}
       />
-      <View>
+      <View
+        style={{
+          backgroundColor: COLORS.secondary,
+          borderRadius: 5,
+          padding: 5,
+        }}
+      >
         <View
           style={{
             flexDirection: "row",
@@ -36,8 +54,8 @@ const Engine: React.FunctionComponent<Props> = ({ engine }) => {
             alignItems: "center",
           }}
         >
-          <Text>engine name:</Text>
-          <Text>{engine.name}</Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>engine:</Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>{engine.name}</Text>
         </View>
         <View
           style={{
@@ -46,8 +64,8 @@ const Engine: React.FunctionComponent<Props> = ({ engine }) => {
             alignItems: "center",
           }}
         >
-          <Text>admin:</Text>
-          <Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>admin:</Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>
             {engine.admin.nickname === gamer?.nickname
               ? "you"
               : engine.admin.nickname}
@@ -60,8 +78,10 @@ const Engine: React.FunctionComponent<Props> = ({ engine }) => {
             alignItems: "center",
           }}
         >
-          <Text>created:</Text>
-          <Text>{dayjs(engine.createdAt).fromNow()} ago</Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>created:</Text>
+          <Text style={[styles.p, { color: COLORS.white }]}>
+            {dayjs(engine.createdAt).fromNow()} ago
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

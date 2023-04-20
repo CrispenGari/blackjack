@@ -3,7 +3,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 export type AppParamList = {
   Engines: undefined;
-  Engine: undefined;
+  Engine: {
+    engineId: string;
+  };
   Chat: undefined;
 };
 
