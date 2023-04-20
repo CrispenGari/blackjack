@@ -11,7 +11,7 @@ LogBox.ignoreAllLogs();
 
 const App = () => {
   const [loaded] = useFonts(Fonts);
-  if (!loaded) return <Loading />;
+  if (!loaded) return <Loading loadedFont={loaded} />;
   return (
     <TRPCProvider>
       <View style={{ flex: 1 }}>

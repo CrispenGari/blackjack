@@ -1,12 +1,55 @@
-import { View, Text, StatusBar } from "react-native";
+import { View, Text, StatusBar, Image } from "react-native";
 import React from "react";
-
-const Loading = () => {
+import * as Animatable from "react-native-animatable";
+import { LinearGradient } from "expo-linear-gradient";
+import { COLORS, FONTS } from "../../constants";
+interface Props {
+  loadedFont: boolean;
+}
+const Loading: React.FunctionComponent<Props> = ({ loadedFont }) => {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <LinearGradient
+      colors={[COLORS.main, COLORS.secondary]}
+      start={{
+        x: 0,
+        y: 1,
+      }}
+      end={{
+        x: 0,
+        y: 0,
+      }}
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    >
       <StatusBar barStyle={"light-content"} />
-      <Text>Loading...</Text>
-    </View>
+      <Animatable.Image
+        animation={"zoomIn"}
+        duration={2000}
+        iterationCount={"infinite"}
+        easing={"linear"}
+        direction={"normal"}
+        useNativeDriver={false}
+        source={{
+          uri: Image.resolveAssetSource(require("../../../assets/logo.png"))
+            .uri,
+        }}
+        style={{
+          width: 100,
+          height: 100,
+          marginBottom: 50,
+          resizeMode: "contain",
+        }}
+      />
+
+      {loadedFont ? (
+        <Text
+          style={{ color: "white", fontSize: 18, fontFamily: FONTS.semiBold }}
+        >
+          loading...
+        </Text>
+      ) : (
+        <Text style={{ color: "white", fontSize: 18 }}>loading...</Text>
+      )}
+    </LinearGradient>
   );
 };
 

@@ -19,8 +19,7 @@ const Routes = () => {
     };
   }, [data, setGamer]);
 
-  if (isLoading) return <Loading />;
-
+  if (isLoading) return <Loading loadedFont={true} />;
   return (
     <NavigationContainer>{gamer ? <Game /> : <Auth />}</NavigationContainer>
   );
