@@ -5,11 +5,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, FONTS } from "../../constants";
 interface Props {
   loadedFont: boolean;
+  bg?: string;
 }
-const Loading: React.FunctionComponent<Props> = ({ loadedFont }) => {
+const Loading: React.FunctionComponent<Props> = ({ loadedFont, bg }) => {
   return (
     <LinearGradient
-      colors={[COLORS.main, COLORS.secondary]}
+      colors={bg ? [bg, bg] : [COLORS.main, COLORS.secondary]}
       start={{
         x: 0,
         y: 1,

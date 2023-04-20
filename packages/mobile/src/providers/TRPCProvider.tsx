@@ -45,7 +45,6 @@ const getEndingLink = () => {
       },
       headers: async () => {
         const token = await retrieve(TOKEN_KEY);
-        console.log({ token });
         return token
           ? {
               Authorization: `Bearer ${token}`,
