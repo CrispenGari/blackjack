@@ -127,12 +127,12 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             padding: 5,
           }}
         >
-          {opponents?.length && opponents.length >= 1 && (
+          {opponents?.length && opponents.length >= 1 ? (
             <Player setError={setError} player={opponents[0]} />
-          )}
-          {opponents?.length && opponents.length >= 3 && (
+          ) : null}
+          {opponents?.length && opponents.length >= 3 ? (
             <Player setError={setError} player={opponents[2]} />
-          )}
+          ) : null}
         </View>
         <View
           style={{
@@ -266,7 +266,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             )}
           </View>
 
-          {!!environment?.next && (
+          {!!environment?.next ? (
             <View style={{ paddingHorizontal: 10, width: "100%" }}>
               <Message
                 error={false}
@@ -277,7 +277,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                 }
               />
             </View>
-          )}
+          ) : null}
         </View>
         <View
           style={{
@@ -285,16 +285,16 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             padding: 5,
           }}
         >
-          {opponents?.length && opponents.length >= 2 && (
+          {opponents?.length && opponents.length >= 2 ? (
             <Player setError={setError} player={opponents[1]} />
-          )}
-          {opponents?.length && opponents.length >= 4 && (
+          ) : null}
+          {opponents?.length && opponents.length >= 4 ? (
             <Player setError={setError} player={opponents[3]} />
-          )}
+          ) : null}
         </View>
       </View>
       <View style={{ flex: 0.4, position: "relative", padding: 10 }}>
-        {!!error && <Message error message={error} />}
+        {!!error ? <Message error message={error} /> : null}
         <View
           style={{
             position: "absolute",

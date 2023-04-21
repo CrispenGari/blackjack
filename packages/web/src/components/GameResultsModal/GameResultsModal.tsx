@@ -71,18 +71,8 @@ const GameResultsModal: React.FC<Props> = ({ open, setOpen, positions }) => {
           onClick={() => {
             setOpen((state) => !state);
           }}
-          //   disabled={isLoading}
         >
           Close
-        </CButton>
-        <CButton
-          className={styles.game__results__modal__create__btn}
-          type="button"
-          color="primary"
-          //   onClick={onSubmit}
-          //   disabled={isLoading}
-        >
-          Join
         </CButton>
       </CModalFooter>
     </CModal>

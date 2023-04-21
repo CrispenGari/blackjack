@@ -29,7 +29,6 @@ const Player: React.FunctionComponent<Props> = ({ player, setError }) => {
   const { isLoading, mutate } = trpc.game.updateGameEnvironment.useMutation();
   const { gamer } = useGamerStore((s) => s);
   const [selected, setSelected] = React.useState<boolean>(false);
-
   const [currentPlayer, setCurrentPlayer] = React.useState<
     GamerType | null | undefined
   >();

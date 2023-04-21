@@ -2,7 +2,12 @@ import { View, ScrollView } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
-import { EngineHeader, Environment, Loading } from "../../../components";
+import {
+  EngineHeader,
+  Environment,
+  GameResultsBottomSheet,
+  Loading,
+} from "../../../components";
 import { trpc } from "../../../utils/trpc";
 import { useEnvironmentStore, useGamerStore } from "../../../store";
 import Toast from "react-native-toast-message";
@@ -40,6 +45,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   const { mutate: mutateUpdateGamePosition } =
     trpc.game.updateGamePositions.useMutation();
   const [openResults, setOpenResults] = React.useState<boolean>(false);
+  const toggle = () => setOpenResults((state) => !state);
   const { setEnvironment, setGamersIds, environment } = useEnvironmentStore(
     (state) => state
   );
@@ -195,9 +201,9 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {!!data?.engine && (
+      {!!data?.engine ? (
         <EngineHeader engine={data.engine} navigation={navigation} />
-      )}
+      ) : null}
       {isLoading ? (
         <Loading loadedFont={true} bg={COLORS.secondary} />
       ) : (
@@ -207,9 +213,17 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
         >
-          {!!data?.engine && <Environment engine={data.engine} />}
+          {!!data?.engine ? <Environment engine={data.engine} /> : null}
         </ScrollView>
       )}
+
+      {!!environment?.positions ? (
+        <GameResultsBottomSheet
+          open={openResults}
+          toggle={toggle}
+          positions={environment.positions}
+        />
+      ) : null}
     </View>
   );
 };

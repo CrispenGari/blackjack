@@ -10,7 +10,9 @@ export { default as AppStackBackButton } from "./AppStackBackButton/AppStackBack
 export { default as DotCircular } from "./DotCircular/DotCircular";
 export { default as Oponent } from "./Oponent/Oponent";
 export { default as Player } from "./Player/Player";
+export { default as GameResultsBottomSheet } from "./GameResultsBottomSheet/GameResultsBottomSheet";
 export { default as Card } from "./Card/Card";
+export { default as Table } from "./Table/Table";
 export { default as Environment } from "./Environment/Environment";
 export { default as StartGameBottomSheet } from "./StartGameBottomSheet/StartGameBottomSheet";
 export { default as CreateEngineBottomSheet } from "./CreateEngineBottomSheet/CreateEngineBottomSheet";
