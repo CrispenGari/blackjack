@@ -102,6 +102,11 @@
   overflow-x: hidden;
   justify-content: center;
 }
+.games__main__search {
+  width: 100%;
+  padding: 10px;
+  max-width: 500px;
+}
 .games__main__games::-webkit-scrollbar {
   display: none !important;
 }

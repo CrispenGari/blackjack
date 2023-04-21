@@ -3,6 +3,7 @@ import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS, TOKEN_KEY } from "../../../constants";
 import {
+  CustomTextInput,
   DotCircular,
   Engine,
   EnginesHeader,
@@ -12,7 +13,7 @@ import {
 import { trpc } from "../../../utils/trpc";
 import { useGamerStore } from "../../../store";
 import { styles } from "../../../styles";
-import { Engine as EngineType } from "@blackjack/server";
+import { Engine as EngineType, Gamer } from "@blackjack/server";
 import { del } from "../../../utils";
 
 const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
@@ -43,6 +44,34 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
       }
     });
   };
+
+  const [name, setName] = React.useState<string>("");
+
+  const [engines, setEngines] = React.useState<
+    Array<
+      EngineType & {
+        admin: Gamer;
+      }
+    >
+  >(data?.engines || []);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted) {
+      if (!!name) {
+        setEngines((state) =>
+          state.filter((engine) =>
+            engine.name.toLowerCase().includes(name.trim().toLowerCase())
+          )
+        );
+      } else {
+        setEngines(data?.engines || []);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [name, data]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -120,6 +149,17 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
         >
+          <CustomTextInput
+            placeholder="filter engines..."
+            inputStyle={{
+              backgroundColor: COLORS.white,
+              margin: 10,
+              maxWidth: 500,
+              width: "100%",
+            }}
+            text={name}
+            onChangeText={(text) => setName(text)}
+          />
           {data?.total === 0 ? (
             <View style={{ width: "100%", alignItems: "center" }}>
               <Text style={[styles.p, { padding: 30 }]}>
@@ -153,13 +193,25 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
                 width: "100%",
               }}
             >
-              {data?.engines.map((engine) => (
-                <Engine
-                  key={engine.id}
-                  engine={engine}
-                  onPress={() => setEngineToOpen(engine)}
-                />
-              ))}
+              {engines.length === 0 ? (
+                <Text
+                  style={{
+                    padding: 10,
+                    textAlign: "center",
+                    fontFamily: FONTS.regular,
+                  }}
+                >
+                  No engines that matches filter {`"${name}"`}.
+                </Text>
+              ) : (
+                engines.map((engine) => (
+                  <Engine
+                    key={engine.id}
+                    engine={engine}
+                    onPress={() => setEngineToOpen(engine)}
+                  />
+                ))
+              )}
             </View>
           )}
           <View style={{ height: 200 }} />

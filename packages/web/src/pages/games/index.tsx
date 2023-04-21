@@ -3,8 +3,9 @@ import styles from "@/styles/Games.module.css";
 import { Header, NewGameModal, Game } from "@/components";
 import { useRouter } from "next/router";
 import { useGamerStore } from "@/store";
-import { CButton, CImage } from "@coreui/react";
+import { CButton, CFormInput, CImage } from "@coreui/react";
 import { trpc } from "@/utils/trpc";
+import { Engine, Gamer } from "@blackjack/server";
 interface Props {}
 const Games: React.FC<Props> = ({}) => {
   const { data, refetch, isLoading } = trpc.engine.engines.useQuery();
@@ -16,6 +17,33 @@ const Games: React.FC<Props> = ({}) => {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
   const { gamer } = useGamerStore((state) => state);
+  const [name, setName] = React.useState<string>("");
+
+  const [engines, setEngines] = React.useState<
+    Array<
+      Engine & {
+        admin: Gamer;
+      }
+    >
+  >(data?.engines || []);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted) {
+      if (!!name) {
+        setEngines((state) =>
+          state.filter((engine) =>
+            engine.name.toLowerCase().includes(name.trim().toLowerCase())
+          )
+        );
+      } else {
+        setEngines(data?.engines || []);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [name, data]);
 
   React.useEffect(() => {
     let mounted: boolean = true;
@@ -42,6 +70,14 @@ const Games: React.FC<Props> = ({}) => {
           </div>
           <CButton onClick={() => setOpen(true)}>New</CButton>
         </div>
+        <div className={styles.games__main__search}>
+          <CFormInput
+            type="text"
+            placeholder="filter engines..."
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
         {isLoading ? (
           <div className={styles.games__main__loading}>
@@ -60,10 +96,17 @@ const Games: React.FC<Props> = ({}) => {
                   Create New Engine/Environment
                 </CButton>
               </div>
+            ) : engines.length !== 0 ? (
+              engines.map((engine) => <Game key={engine.id} engine={engine} />)
             ) : (
-              data?.engines.map((engine) => (
-                <Game key={engine.id} engine={engine} />
-              ))
+              <p
+                style={{
+                  padding: 20,
+                  userSelect: "none",
+                }}
+              >
+                No engines that matches filter {`"${name}"`}.
+              </p>
             )}
           </div>
         )}
