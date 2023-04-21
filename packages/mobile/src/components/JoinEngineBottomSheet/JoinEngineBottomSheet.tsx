@@ -18,6 +18,7 @@ import { trpc } from "../../utils/trpc";
 import Oponent from "../Oponent/Oponent";
 import Message from "../Message/Message";
 import DotCircular from "../DotCircular/DotCircular";
+import Loading from "../Loading/Loading";
 interface Props {
   engine: Engine;
   toggle: () => void;
@@ -32,7 +33,7 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
     dimension: { height },
   } = useMediaQuery();
   const { gamer } = useGamerStore((s) => s);
-  const { data: gamers } = trpc.game.gamers.useQuery({
+  const { data: gamers, isLoading: fetching } = trpc.game.gamers.useQuery({
     ids: engine.gamersIds.filter((id) => id !== gamer?.id),
   });
   const {
@@ -91,9 +92,10 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
             { color: COLORS.white, margin: 10, fontFamily: FONTS.semiBold },
           ]}
         >
-          {engine.gamersIds.length} opponents in the engine.
+          {engine.gamersIds.filter((id) => id !== gamer?.id).length} opponents
+          in the engine.
         </Text>
-        {gamers?.gamers && (
+        {gamers?.gamers ? (
           <FlatList
             style={{ flex: 1 }}
             horizontal
@@ -106,7 +108,8 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
               <Oponent player={player} adminId={engine.adminId} />
             )}
           />
-        )}
+        ) : null}
+        {fetching ? <Loading loadedFont={true} /> : null}
         {!!data?.error && (
           <View style={{ padding: 10 }}>
             <Message error message={data.error.message} />

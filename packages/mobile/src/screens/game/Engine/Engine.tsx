@@ -1,7 +1,8 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, SafeAreaView } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
+import * as ScreenOrientation from "expo-screen-orientation";
 import {
   EngineHeader,
   Environment,
@@ -37,6 +38,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       headerLeft: () => null,
     });
   }, [navigation]);
+
   const {
     data: player,
     isLoading: fetching,
@@ -200,7 +202,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   }, [isFetched, player, setGamer]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       {!!data?.engine ? (
         <EngineHeader engine={data.engine} navigation={navigation} />
       ) : null}
@@ -224,7 +226,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
           positions={environment.positions}
         />
       ) : null}
-    </View>
+    </SafeAreaView>
   );
 };
 

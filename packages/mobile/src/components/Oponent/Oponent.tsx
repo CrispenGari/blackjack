@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import { Gamer, GamerType } from "@blackjack/server";
+import { Gamer } from "@blackjack/server";
 import { useGamerStore } from "../../store";
 import { trpc } from "../../utils/trpc";
 import { COLORS, FONTS } from "../../constants";
@@ -40,7 +40,8 @@ const Oponent: React.FunctionComponent<Props> = ({ player, adminId }) => {
         style={[
           styles.button,
           {
-            backgroundColor: COLORS.secondary,
+            backgroundColor:
+              gamer?.id !== adminId ? COLORS.tertiary : COLORS.secondary,
             padding: 5,
             borderRadius: 5,
             marginTop: 10,

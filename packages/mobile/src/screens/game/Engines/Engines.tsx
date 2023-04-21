@@ -15,6 +15,7 @@ import { useGamerStore } from "../../../store";
 import { styles } from "../../../styles";
 import { Engine as EngineType, Gamer } from "@blackjack/server";
 import { del } from "../../../utils";
+import { useMediaQuery } from "../../../hooks";
 
 const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   navigation,
@@ -30,6 +31,9 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
       await refetch();
     },
   });
+  const {
+    dimension: { height },
+  } = useMediaQuery();
   const { mutateAsync, isLoading: signingOut } =
     trpc.gamer.logout.useMutation();
   const { setGamer } = useGamerStore((state) => state);
@@ -189,8 +193,9 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                justifyContent: "space-around",
                 width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               {engines.length === 0 ? (

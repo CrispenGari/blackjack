@@ -7,6 +7,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
 } from "react-native";
 import React from "react";
 import { BottomSheet } from "react-native-btr";
@@ -108,23 +109,26 @@ const StartGameBottomSheet: React.FunctionComponent<Props> = ({
                 {gamers?.gamers.length} more gamers
               </Text>
             )}
-            {!!gamers?.gamers.length &&
-              gamers?.gamers
-                .filter((player) => player.id !== gamer?.id)
-                .map((player) => (
-                  <FlatList
-                    style={{ height: 100 }}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    showsVerticalScrollIndicator={false}
-                    data={gamers.gamers}
-                    keyExtractor={({ id }) => id}
-                    contentContainerStyle={{ paddingLeft: 10 }}
-                    renderItem={({ item: player }) => (
-                      <Oponent player={player} adminId={engine.adminId} />
-                    )}
-                  />
-                ))}
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingLeft: 10 }}
+              style={{ height: 100 }}
+            >
+              {!!gamers?.gamers
+                ? gamers.gamers
+                    .filter((player) => player.id !== gamer?.id)
+                    .map((player) => (
+                      <Oponent
+                        key={player.id}
+                        player={player}
+                        adminId={engine.adminId}
+                      />
+                    ))
+                : null}
+            </ScrollView>
 
             <Text
               style={[

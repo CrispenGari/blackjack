@@ -25,7 +25,6 @@ const Engine: React.FunctionComponent<Props> = ({ engine, onPress }) => {
       onPress={onPress}
       style={{
         width: 130,
-        height: 100,
         backgroundColor: COLORS.white,
         margin: 5,
         borderRadius: 5,
@@ -38,7 +37,7 @@ const Engine: React.FunctionComponent<Props> = ({ engine, onPress }) => {
             CARDS_BACK.find((c) => c.id === engine.cover)!.src
           ).uri,
         }}
-        style={{ height: 100, resizeMode: "contain" }}
+        style={{ height: 70, resizeMode: "contain" }}
       />
       <View
         style={{

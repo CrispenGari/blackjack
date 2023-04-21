@@ -82,11 +82,10 @@ const CreateEngineBottomSheet: React.FunctionComponent<Props> = ({
               <CustomTextInput
                 placeholder="Engine Name"
                 inputStyle={{
-                  width: "100%",
-                  maxWidth: 500,
                   fontSize: 20,
                   paddingHorizontal: 15,
                   paddingVertical: 10,
+                  maxWidth: 500,
                   marginBottom: 5,
                 }}
                 text={name}
