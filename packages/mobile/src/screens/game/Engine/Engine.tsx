@@ -2,8 +2,9 @@ import { View, Text, ScrollView } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
-import { EngineHeader, Loading } from "../../../components";
+import { EngineHeader, Environment, Loading } from "../../../components";
 import { trpc } from "../../../utils/trpc";
+import { useEnvironmentStore, useGamerStore } from "../../../store";
 
 const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   navigation,
@@ -30,9 +31,184 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       headerLeft: () => null,
     });
   }, [navigation]);
+  const {
+    data: player,
+    isLoading: fetching,
+    isFetched,
+  } = trpc.gamer.gamer.useQuery();
+  const { mutate: mutateUpdateGamePosition } =
+    trpc.game.updateGamePositions.useMutation();
+  const [openResults, setOpenResults] = React.useState<boolean>(false);
+  const toaster = React.useRef();
+  const { setEnvironment, setGamersIds, environment } = useEnvironmentStore(
+    (state) => state
+  );
+
+  const { gamer, setGamer } = useGamerStore((state) => state);
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
     engineId,
   });
+  const { mutate: mutateLeaveEngine, isLoading: leaving } =
+    trpc.engine.leaveEngine.useMutation();
+
+  trpc.engine.onEngineStateChanged.useSubscription(
+    { engineId },
+    {
+      onData: async (data) => {
+        setGamersIds(data.gamersIds);
+        await refetch();
+      },
+    }
+  );
+  trpc.game.onGameStateChanged.useSubscription(
+    { engineId: engineId },
+    {
+      onData: (data) => {
+        setEnvironment(data.gameData);
+      },
+    }
+  );
+  trpc.engine.onGamerJoinEngine.useSubscription(
+    { engineId },
+    {
+      onData: async (gamer) => {
+        // addToast(
+        //   Toast({
+        //     message: `${gamer.gamer.nickname} just joined the game engine as ${
+        //       gamer.gamer.id === data?.engine?.adminId
+        //         ? "an admin"
+        //         : " a regular gamer"
+        //     }.`,
+        //     notificationTitle: "New Gamer Joined",
+        //   }) as any
+        // );
+      },
+    }
+  );
+  trpc.engine.onGamerLeaveEngine.useSubscription(
+    { engineId },
+    {
+      onData: async (gamer) => {
+        // addToast(
+        //   Toast({
+        //     message: `${gamer.gamer.nickname} just left the game engine as ${
+        //       gamer.gamer.id === data?.engine?.adminId
+        //         ? "an admin"
+        //         : " a regular gamer"
+        //     }.`,
+        //     notificationTitle: "New Gamer Left",
+        //   }) as any
+        // );
+      },
+    }
+  );
+  trpc.game.onGameStart.useSubscription(
+    { gamerId: gamer?.id || "", engineId },
+    {
+      onData: async ({ message }) => {
+        // addToast(
+        //   Toast({
+        //     message,
+        //     notificationTitle: "Game started",
+        //   }) as any
+        // );
+      },
+    }
+  );
+
+  trpc.engine.onDeleteEngine.useSubscription(
+    { engineId },
+    {
+      onData: (data) => {
+        if (data.id === engineId) {
+          navigation.replace("Engines");
+        }
+      },
+    }
+  );
+
+  trpc.game.onUpdateGamePositions.useSubscription(
+    {
+      engineId,
+      gamerId: gamer?.id || "",
+    },
+    {
+      onData: ({ message }) => {
+        // addToast(
+        //   Toast({
+        //     message,
+        //     notificationTitle: "Game Engine Update",
+        //   }) as any
+        // );
+      },
+    }
+  );
+  trpc.game.onGamerRemoved.useSubscription(
+    {
+      engineId,
+      gamerId: gamer?.id || "",
+    },
+    {
+      onData: async ({ gamer: me, message }) => {
+        // addToast(
+        //   Toast({
+        //     message,
+        //     notificationTitle: "Gamer Removed",
+        //   }) as any
+        // );
+        await refetch();
+        if (me.id === gamer?.id) {
+          navigation.replace("Engines");
+        }
+      },
+    }
+  );
+  trpc.game.onGameOver.useSubscription(
+    { engineId },
+    {
+      onData: (data) => {
+        setOpenResults(true);
+      },
+    }
+  );
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!environment?.players) {
+      const winner = environment.players.find(
+        (player) => player.cards.length === 0
+      );
+      if (!!winner) {
+        (async (env) => {
+          await mutateUpdateGamePosition({ env, winner });
+        })(environment);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [environment, mutateUpdateGamePosition]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && isFetched) {
+      setGamer((player?.gamer as any) || null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [isFetched, player, setGamer]);
+
+  // React.useEffect(() => {
+  //   let mounted: boolean = true;
+  //   if (mounted && isFetched) {
+  //     if (!!!gamer) {
+  //       navigat
+  //     }
+  //   }
+  //   return () => {
+  //     mounted = false;
+  //   };
+  // }, [isFetched, router, gamer]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -47,7 +223,9 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
           bounces={false}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-        ></ScrollView>
+        >
+          {!!data?.engine && <Environment engine={data.engine} />}
+        </ScrollView>
       )}
     </View>
   );
