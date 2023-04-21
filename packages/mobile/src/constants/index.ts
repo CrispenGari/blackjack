@@ -47,8 +47,16 @@ export const FONTS = {
 };
 
 export const BLACK_JACKS = [
-  { id: "J_OF_CLUBS", name: "Jack Of Clubs" },
-  { id: "J_OF_SPADES", name: "Jack Of Spades" },
+  {
+    id: "J_OF_CLUBS",
+    name: "Jack Of Clubs",
+    src: require("../../assets/cards/jacks/j_of_clubs.png"),
+  },
+  {
+    id: "J_OF_SPADES",
+    name: "Jack Of Spades",
+    src: require("../../assets/cards/jacks/j_of_spades.png"),
+  },
 ].sort(() => Math.random() - 0.5);
 
 export const CARDS_BACK = [

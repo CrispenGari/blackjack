@@ -6,21 +6,29 @@ import Routes from "./src/routes/Routes";
 import { useFonts } from "expo-font";
 import { COLORS, FONTS, Fonts } from "./src/constants";
 import { Loading } from "./src/components";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+import Toast, {
+  BaseToast,
+  BaseToastProps,
+  ErrorToast,
+} from "react-native-toast-message";
 
 LogBox.ignoreLogs;
 LogBox.ignoreAllLogs();
 
 const toastConfig = {
-  success: (props: any) => (
+  success: (props: BaseToastProps) => (
     <BaseToast
       {...props}
       style={{
         borderLeftColor: COLORS.secondary,
         width: "100%",
         maxWidth: 500,
+        backgroundColor: COLORS.main,
       }}
-      contentContainerStyle={{ paddingHorizontal: 10 }}
+      contentContainerStyle={{
+        paddingHorizontal: 10,
+        backgroundColor: COLORS.main,
+      }}
       text1Style={{
         fontSize: 20,
         fontFamily: FONTS.regularBold,

@@ -85,12 +85,14 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   trpc.engine.onGamerLeaveEngine.useSubscription(
     { engineId },
     {
-      onData: async (gamer) => {
+      onData: async (g) => {
         Toast.show({
           type: "success",
           text1: "New Gamer Left",
-          text2: `${gamer.gamer.nickname} just left the game engine as ${
-            gamer.gamer.id === data?.engine?.adminId
+          text2: `${
+            g.gamer.nickname === gamer?.nickname ? "you" : g.gamer.nickname
+          } just left the game engine as ${
+            g.gamer.id === data?.engine?.adminId
               ? "an admin"
               : " a regular gamer"
           }.`,

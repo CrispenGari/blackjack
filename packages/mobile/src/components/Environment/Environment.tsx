@@ -14,6 +14,7 @@ import { useMediaQuery } from "../../hooks";
 import Message from "../Message/Message";
 import Player from "../Player/Player";
 import Card from "../Card/Card";
+import StartGameBottomSheet from "../StartGameBottomSheet/StartGameBottomSheet";
 
 interface Props {
   engine: Engine & {
@@ -356,6 +357,8 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <StartGameBottomSheet open={open} toggle={toggle} engine={engine} />
     </View>
   );
 };
