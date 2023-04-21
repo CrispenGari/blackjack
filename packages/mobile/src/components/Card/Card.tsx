@@ -19,7 +19,6 @@ const Card: React.FC<Props> = ({
   onPress,
   setError,
 }) => {
-  console.log(JSON.stringify({ card }, null, 2));
   const { environment } = useEnvironmentStore((s) => s);
   const { gamer } = useGamerStore((s) => s);
   const selectCard = async () => {

@@ -1,10 +1,11 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
 import { EngineHeader, Environment, Loading } from "../../../components";
 import { trpc } from "../../../utils/trpc";
 import { useEnvironmentStore, useGamerStore } from "../../../store";
+import Toast from "react-native-toast-message";
 
 const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   navigation,
@@ -39,7 +40,6 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   const { mutate: mutateUpdateGamePosition } =
     trpc.game.updateGamePositions.useMutation();
   const [openResults, setOpenResults] = React.useState<boolean>(false);
-  const toaster = React.useRef();
   const { setEnvironment, setGamersIds, environment } = useEnvironmentStore(
     (state) => state
   );
@@ -48,8 +48,6 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
     engineId,
   });
-  const { mutate: mutateLeaveEngine, isLoading: leaving } =
-    trpc.engine.leaveEngine.useMutation();
 
   trpc.engine.onEngineStateChanged.useSubscription(
     { engineId },
@@ -72,16 +70,15 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     { engineId },
     {
       onData: async (gamer) => {
-        // addToast(
-        //   Toast({
-        //     message: `${gamer.gamer.nickname} just joined the game engine as ${
-        //       gamer.gamer.id === data?.engine?.adminId
-        //         ? "an admin"
-        //         : " a regular gamer"
-        //     }.`,
-        //     notificationTitle: "New Gamer Joined",
-        //   }) as any
-        // );
+        Toast.show({
+          type: "success",
+          text1: "New Gamer Joined",
+          text2: `${gamer.gamer.nickname} just joined the game engine as ${
+            gamer.gamer.id === data?.engine?.adminId
+              ? "an admin"
+              : " a regular gamer"
+          }`,
+        });
       },
     }
   );
@@ -89,16 +86,15 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     { engineId },
     {
       onData: async (gamer) => {
-        // addToast(
-        //   Toast({
-        //     message: `${gamer.gamer.nickname} just left the game engine as ${
-        //       gamer.gamer.id === data?.engine?.adminId
-        //         ? "an admin"
-        //         : " a regular gamer"
-        //     }.`,
-        //     notificationTitle: "New Gamer Left",
-        //   }) as any
-        // );
+        Toast.show({
+          type: "success",
+          text1: "New Gamer Left",
+          text2: `${gamer.gamer.nickname} just left the game engine as ${
+            gamer.gamer.id === data?.engine?.adminId
+              ? "an admin"
+              : " a regular gamer"
+          }.`,
+        });
       },
     }
   );
@@ -106,16 +102,14 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     { gamerId: gamer?.id || "", engineId },
     {
       onData: async ({ message }) => {
-        // addToast(
-        //   Toast({
-        //     message,
-        //     notificationTitle: "Game started",
-        //   }) as any
-        // );
+        Toast.show({
+          type: "success",
+          text1: "Game Started",
+          text2: message,
+        });
       },
     }
   );
-
   trpc.engine.onDeleteEngine.useSubscription(
     { engineId },
     {
@@ -134,12 +128,11 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     },
     {
       onData: ({ message }) => {
-        // addToast(
-        //   Toast({
-        //     message,
-        //     notificationTitle: "Game Engine Update",
-        //   }) as any
-        // );
+        Toast.show({
+          type: "success",
+          text1: "Game Engine Update",
+          text2: message,
+        });
       },
     }
   );
@@ -150,12 +143,12 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     },
     {
       onData: async ({ gamer: me, message }) => {
-        // addToast(
-        //   Toast({
-        //     message,
-        //     notificationTitle: "Gamer Removed",
-        //   }) as any
-        // );
+        Toast.show({
+          type: "success",
+          text1: "Gamer Removed",
+          text2: message,
+        });
+
         await refetch();
         if (me.id === gamer?.id) {
           navigation.replace("Engines");
@@ -197,18 +190,6 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       mounted = false;
     };
   }, [isFetched, player, setGamer]);
-
-  // React.useEffect(() => {
-  //   let mounted: boolean = true;
-  //   if (mounted && isFetched) {
-  //     if (!!!gamer) {
-  //       navigat
-  //     }
-  //   }
-  //   return () => {
-  //     mounted = false;
-  //   };
-  // }, [isFetched, router, gamer]);
 
   return (
     <View style={{ flex: 1 }}>
