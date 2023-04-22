@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import styles from "@/styles/Games.module.css";
-import { Header, NewGameModal, Game } from "@/components";
+import { Header, NewGameModal, Game, GameHelpModal } from "@/components";
 import { useRouter } from "next/router";
 import { useGamerStore } from "@/store";
 import { CButton, CFormInput, CImage } from "@coreui/react";
 import { trpc } from "@/utils/trpc";
 import { Engine, Gamer } from "@blackjack/server";
+import { INSTRUCTIONS_KEY } from "@/constants";
+import { retrieve } from "@/utils";
 interface Props {}
 const Games: React.FC<Props> = ({}) => {
   const { data, refetch, isLoading } = trpc.engine.engines.useQuery();
@@ -16,6 +18,7 @@ const Games: React.FC<Props> = ({}) => {
   });
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
+  const [openGameHelp, setOpenGameHelp] = React.useState<boolean>(false);
   const { gamer } = useGamerStore((state) => state);
   const [name, setName] = React.useState<string>("");
 
@@ -54,11 +57,26 @@ const Games: React.FC<Props> = ({}) => {
       mounted = false;
     };
   }, [router, gamer]);
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!gamer) {
+      (async () => {
+        const id = await retrieve(INSTRUCTIONS_KEY);
+        if (gamer.id !== id) {
+          setOpenGameHelp(true);
+        }
+      })();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [gamer]);
 
   return (
     <div className={styles.games}>
       <Header />
       <NewGameModal open={open} setOpen={setOpen} />
+      <GameHelpModal open={openGameHelp} setOpen={setOpenGameHelp} />
       <div className={styles.games__main}>
         <div className={styles.games__main__header}>
           <div>

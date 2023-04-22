@@ -13,6 +13,7 @@ export const relativeTimeObject = {
   y: "1y",
   yy: "%dy",
 };
+export const INSTRUCTIONS_KEY = "instructions";
 
 export const BLACK_JACKS = [
   { id: "J_OF_CLUBS", name: "Jack Of Clubs" },

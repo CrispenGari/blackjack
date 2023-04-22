@@ -1,0 +1,30 @@
+.game__help__modal__header,
+.game__help__modal__body,
+.game__help__modal__footer {
+  background-color: var(--secondary) !important;
+  color: white;
+}
+.game__help__modal__instructions {
+  flex: 1;
+  height: 50vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.game__help__modal__body img {
+  width: 100px !important;
+  height: 100px !important;
+}
+
+.game__help__modal__create__btn {
+  width: 100px !important;
+  transition: all 1s ease;
+  border: none !important;
+  outline: none !important;
+  background-color: var(--main) !important;
+}
+
+.game__help__modal__create__btn:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
+}

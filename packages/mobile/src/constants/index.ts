@@ -16,6 +16,7 @@ export const relativeTimeObject = {
   yy: "%dy",
 };
 export const TOKEN_KEY: string = "qid";
+export const INSTRUCTIONS_KEY = "instructions";
 export const COLORS = {
   main: "#395144",
   primary: "#4e6c50",

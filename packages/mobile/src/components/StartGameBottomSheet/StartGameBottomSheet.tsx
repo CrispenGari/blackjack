@@ -47,7 +47,6 @@ const StartGameBottomSheet: React.FunctionComponent<Props> = ({
     src: string;
   }>(CARDS_BACK[0]);
 
-  const { environment } = useEnvironmentStore((s) => s);
   const { gamer } = useGamerStore((s) => s);
   const { data: gamers } = trpc.game.gamers.useQuery({
     ids: engine.gamersIds.filter((id) => id !== gamer?.id),

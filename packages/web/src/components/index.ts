@@ -4,6 +4,7 @@ export { default as Loading } from "./Loading/Loading";
 export { default as Environment } from "./Environment/Environment";
 export { default as GameChat } from "./GameChat/GameChat";
 export { default as Game } from "./Game/Game";
+export { default as GameHelpModal } from "./GameHelpModal/GameHelpModal";
 export { default as Oponent } from "./Oponent/Oponent";
 export { default as Toast } from "./Toast/Toast";
 export { default as EngineOptionsModal } from "./EngineOptionsModal/EngineOptionsModal";

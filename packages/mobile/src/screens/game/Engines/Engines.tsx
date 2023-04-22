@@ -1,12 +1,13 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
-import { COLORS, FONTS, TOKEN_KEY } from "../../../constants";
+import { COLORS, FONTS, INSTRUCTIONS_KEY, TOKEN_KEY } from "../../../constants";
 import {
   CustomTextInput,
   DotCircular,
   Engine,
   EnginesHeader,
+  GameHelpBottomSheet,
   JoinEngineBottomSheet,
   Loading,
 } from "../../../components";
@@ -14,7 +15,7 @@ import { trpc } from "../../../utils/trpc";
 import { useGamerStore } from "../../../store";
 import { styles } from "../../../styles";
 import { Engine as EngineType, Gamer } from "@blackjack/server";
-import { del } from "../../../utils";
+import { del, retrieve } from "../../../utils";
 
 const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   navigation,
@@ -25,6 +26,9 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   >();
   const [openCreateEngineBottomSheet, setOpenCreateEngineBottomSheet] =
     React.useState<boolean>(false);
+  const [openGameHelpBottomSheet, setOpenGameHelpBottomSheet] =
+    React.useState<boolean>(false);
+
   trpc.engine.onEnginesStateChanged.useSubscription(undefined, {
     onData: async (data) => {
       await refetch();
@@ -36,6 +40,8 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
   const toggle = () => setEngineToOpen(undefined);
   const toggleCreateEngineBottomSheet = () =>
     setOpenCreateEngineBottomSheet((state) => !state);
+  const toggleGameHelpBottomSheet = () =>
+    setOpenGameHelpBottomSheet((state) => !state);
   const logout = () => {
     mutateAsync().then(async (success) => {
       if (success) {
@@ -134,6 +140,22 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
     });
   }, [navigation, signingOut]);
 
+  const { gamer } = useGamerStore((s) => s);
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && !!gamer) {
+      (async () => {
+        const id = await retrieve(INSTRUCTIONS_KEY);
+        if (gamer.id !== id) {
+          setOpenGameHelpBottomSheet(true);
+        }
+      })();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [gamer]);
+
   return (
     <View style={{ flex: 1 }}>
       <EnginesHeader
@@ -226,6 +248,10 @@ const Engines: React.FunctionComponent<AppNavProps<"Engines">> = ({
           toggle={toggle}
         />
       )}
+      <GameHelpBottomSheet
+        toggle={toggleGameHelpBottomSheet}
+        open={openGameHelpBottomSheet}
+      />
     </View>
   );
 };

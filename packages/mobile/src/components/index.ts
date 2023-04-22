@@ -15,3 +15,4 @@ export { default as Table } from "./Table/Table";
 export { default as Environment } from "./Environment/Environment";
 export { default as StartGameBottomSheet } from "./StartGameBottomSheet/StartGameBottomSheet";
 export { default as CreateEngineBottomSheet } from "./CreateEngineBottomSheet/CreateEngineBottomSheet";
+export { default as GameHelpBottomSheet } from "./GameHelpBottomSheet/GameHelpBottomSheet";
