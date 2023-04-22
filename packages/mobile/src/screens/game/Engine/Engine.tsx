@@ -1,4 +1,4 @@
-import { View, ScrollView, SafeAreaView } from "react-native";
+import { View, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
@@ -12,38 +12,22 @@ import {
 import { trpc } from "../../../utils/trpc";
 import { useEnvironmentStore, useGamerStore } from "../../../store";
 import Toast from "react-native-toast-message";
-
+import { AntDesign } from "@expo/vector-icons";
 const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   navigation,
   route: {
     params: { engineId },
   },
 }) => {
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerStyle: {
-        height: 100,
-        backgroundColor: COLORS.primary,
-        shadowOpacity: 0,
-        borderBottomWidth: 0,
-        borderBottomColor: "transparent",
-        elevation: 0,
-      },
-      headerTitleStyle: {
-        fontFamily: FONTS.extraBold,
-        fontSize: 25,
-        color: COLORS.white,
-      },
-      headerLeft: () => null,
-    });
-  }, [navigation]);
-
   const {
     data: player,
-    isLoading: fetching,
+
     isFetched,
   } = trpc.gamer.gamer.useQuery();
+  const { data: messages, refetch: refetchMessages } =
+    trpc.message.messages.useQuery({
+      engineId,
+    });
   const { mutate: mutateUpdateGamePosition } =
     trpc.game.updateGamePositions.useMutation();
   const [openResults, setOpenResults] = React.useState<boolean>(false);
@@ -186,6 +170,21 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       },
     }
   );
+
+  trpc.message.onNewMessage.useSubscription(
+    { engineId },
+    {
+      onData: async ({ message: { message } }) => {
+        await refetchMessages();
+        Toast.show({
+          type: "success",
+          text1: `New Message`,
+          text2: message,
+        });
+      },
+    }
+  );
+
   React.useEffect(() => {
     let mounted: boolean = true;
     if (mounted && !!environment?.players) {
@@ -212,6 +211,52 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       mounted = false;
     };
   }, [isFetched, player, setGamer]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate("Chat", {
+              engineId,
+            })
+          }
+          style={{ marginHorizontal: 20, position: "relative" }}
+        >
+          {!!messages?.messages.length && (
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 10,
+                right: 0,
+                top: 0,
+                backgroundColor: COLORS.red,
+                position: "relative",
+              }}
+            />
+          )}
+          <AntDesign name="wechat" size={24} color={COLORS.white} />
+        </TouchableOpacity>
+      ),
+      headerShown: true,
+      headerStyle: {
+        height: 100,
+        backgroundColor: COLORS.primary,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        borderBottomColor: "transparent",
+        elevation: 0,
+      },
+      headerTitleStyle: {
+        fontFamily: FONTS.extraBold,
+        fontSize: 25,
+        color: COLORS.white,
+      },
+      headerLeft: () => null,
+    });
+  }, [navigation, engineId, messages]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

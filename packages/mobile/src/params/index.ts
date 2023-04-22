@@ -6,7 +6,9 @@ export type AppParamList = {
   Engine: {
     engineId: string;
   };
-  Chat: undefined;
+  Chat: {
+    engineId: string;
+  };
 };
 
 export type AppNavProps<T extends keyof AppParamList> = {
