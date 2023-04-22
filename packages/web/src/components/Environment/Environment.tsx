@@ -138,9 +138,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
           </div>
           <div className={styles.environment__top__center}>
             {engine.adminId === gamer?.id ? (
-              <CButton onClick={() => setOpen(true)} disabled={engine.playing}>
-                Start
-              </CButton>
+              <CButton onClick={() => setOpen(true)}>Start</CButton>
             ) : engine.playing ? (
               <p>the game has started</p>
             ) : (
@@ -191,13 +189,15 @@ const Environment: React.FC<Props> = ({ engine }) => {
                 ))
               )}
             </div>
-            <CButton
-              onClick={stopGame}
-              disabled={!engine.playing || stoping}
-              className={styles.environment__top__center__button}
-            >
-              Stop
-            </CButton>
+            {engine.adminId === gamer?.id && (
+              <CButton
+                onClick={stopGame}
+                disabled={stoping}
+                className={styles.environment__top__center__button}
+              >
+                Stop
+              </CButton>
+            )}
           </div>
           <div className={styles.environment__top__right}>
             {opponents?.length && opponents.length >= 2 && (

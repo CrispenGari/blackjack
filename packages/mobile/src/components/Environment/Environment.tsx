@@ -170,7 +170,6 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                   maxWidth: 80,
                 },
               ]}
-              disabled={engine.playing}
               onPress={toggle}
             >
               <Text style={[styles.button__text, { color: COLORS.white }]}>
@@ -285,7 +284,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             )}
           </View>
 
-          {engine.playing && engine.adminId === gamer?.id ? (
+          {engine.adminId === gamer?.id ? (
             <TouchableOpacity
               activeOpacity={0.7}
               style={[
@@ -297,7 +296,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                   maxWidth: 80,
                 },
               ]}
-              disabled={stoping || !engine.playing}
+              disabled={stoping}
               onPress={stopGame}
             >
               <Text

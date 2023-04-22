@@ -94,7 +94,7 @@ const Register: React.FC<Props> = ({}) => {
             </CAlert>
           )}
           <CButton type="submit" color="secondary" disabled={isLoading}>
-            Sign In
+            Sign Up
           </CButton>
         </CForm>
       </div>
