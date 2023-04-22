@@ -102,6 +102,19 @@ const Game: React.FC<Props> = ({}) => {
     }
   );
 
+  trpc.game.onGameStop.useSubscription(
+    { gamerId: gamer?.id || "", engineId },
+    {
+      onData: async ({ message }) => {
+        addToast(
+          Toast({
+            message,
+            notificationTitle: "Game Stoped",
+          }) as any
+        );
+      },
+    }
+  );
   trpc.engine.onDeleteEngine.useSubscription(
     { engineId },
     {

@@ -23,8 +23,13 @@ interface Props {
     playerNumber: number;
   };
   setError?: React.Dispatch<React.SetStateAction<string>>;
+  playing: boolean;
 }
-const Player: React.FunctionComponent<Props> = ({ player, setError }) => {
+const Player: React.FunctionComponent<Props> = ({
+  player,
+  setError,
+  playing,
+}) => {
   const { environment, pickCard: choseCard } = useEnvironmentStore((s) => s);
   const { isLoading, mutate } = trpc.game.updateGameEnvironment.useMutation();
   const { gamer } = useGamerStore((s) => s);
@@ -128,6 +133,7 @@ const Player: React.FunctionComponent<Props> = ({ player, setError }) => {
               show={false}
               card={card}
               key={card.id}
+              playing={playing}
             />
           ))}
       </View>

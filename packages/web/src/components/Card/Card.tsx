@@ -12,8 +12,10 @@ interface Props {
   pair?: CardType[];
   onClick?: () => void;
   setError?: React.Dispatch<React.SetStateAction<string>>;
+  playing: boolean;
 }
 const Card: React.FC<Props> = ({
+  playing,
   card,
   show,
   setPair,
@@ -43,6 +45,10 @@ const Card: React.FC<Props> = ({
   }, [environment]);
 
   const handleClickCard = () => {
+    if (!playing && typeof setError !== "undefined") {
+      setError("the admin has stopped the game.");
+      return;
+    }
     if (!!!currentPlayer || !!!gamer) return;
     // you are not supposed to play
     if (currentPlayer.id !== gamer.id && typeof setError !== "undefined") {

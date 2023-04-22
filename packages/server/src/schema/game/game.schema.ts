@@ -57,6 +57,9 @@ export const startGameSchema = z.object({
   // J_OF_CLUBS // J_OF_SPADES
   backCover: z.string(),
 });
+export const stopGameSchema = z.object({
+  engineId: z.string(),
+});
 export const removeGamerSchema = z.object({
   gamerId: z.string(),
 });
@@ -71,6 +74,10 @@ export const onGameOverSchema = z.object({
   engineId: z.string(),
 });
 export const onGameStartSchema = z.object({
+  engineId: z.string(),
+  gamerId: z.string(),
+});
+export const onGameStopSchema = z.object({
   engineId: z.string(),
   gamerId: z.string(),
 });

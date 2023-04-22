@@ -70,7 +70,7 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
       <SafeAreaView
         style={{
           backgroundColor: COLORS.secondary,
-          height: height / 2 - 40,
+          height: height / 2,
           borderTopRightRadius: 30,
           borderTopLeftRadius: 30,
         }}
@@ -97,7 +97,7 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
         </Text>
         {gamers?.gamers ? (
           <FlatList
-            style={{ flex: 1 }}
+            style={{ flex: 1, height: 100 }}
             horizontal
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}

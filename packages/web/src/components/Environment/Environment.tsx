@@ -26,6 +26,9 @@ const Environment: React.FC<Props> = ({ engine }) => {
   const { gamer } = useGamerStore((state) => state);
   const { mutate: mutateMatchCards } = trpc.game.matchCards.useMutation();
   const { isLoading, mutate } = trpc.game.updateNextPlayer.useMutation();
+  const { mutate: mutateStopGame, isLoading: stoping } =
+    trpc.game.stopGame.useMutation();
+
   const [pair, setPair] = React.useState<CardType[]>([]);
   const { environment } = useEnvironmentStore((state) => state);
   const [open, setOpen] = React.useState<boolean>(false);
@@ -105,6 +108,12 @@ const Environment: React.FC<Props> = ({ engine }) => {
     });
   };
 
+  const stopGame = async () => {
+    await mutateStopGame({
+      engineId: engine.id,
+    });
+  };
+
   return (
     <div className={styles.environment}>
       <StartGameModal engine={engine} open={open} setOpen={setOpen} />
@@ -113,18 +122,23 @@ const Environment: React.FC<Props> = ({ engine }) => {
         <div className={styles.environment__top}>
           <div className={styles.environment__top__left}>
             {opponents?.length && opponents.length >= 1 && (
-              <Player setError={setError} player={opponents[0]} />
+              <Player
+                playing={engine.playing}
+                setError={setError}
+                player={opponents[0]}
+              />
             )}
             {opponents?.length && opponents.length >= 3 && (
-              <Player setError={setError} player={opponents[2]} />
+              <Player
+                playing={engine.playing}
+                setError={setError}
+                player={opponents[2]}
+              />
             )}
           </div>
           <div className={styles.environment__top__center}>
             {engine.adminId === gamer?.id ? (
-              <CButton
-                onClick={() => setOpen(true)}
-                // disabled={engine.playing}
-              >
+              <CButton onClick={() => setOpen(true)} disabled={engine.playing}>
                 Start
               </CButton>
             ) : engine.playing ? (
@@ -177,25 +191,39 @@ const Environment: React.FC<Props> = ({ engine }) => {
                 ))
               )}
             </div>
-
-            {!!environment?.next && (
-              <CAlert color="success" style={{ padding: 5 }}>
-                {" "}
-                {environment.next.id === gamer?.id
-                  ? `it's your turn to play`
-                  : `it's ${environment?.next?.nickname}'s turn to play.`}
-              </CAlert>
-            )}
+            <CButton
+              onClick={stopGame}
+              disabled={!engine.playing || stoping}
+              className={styles.environment__top__center__button}
+            >
+              Stop
+            </CButton>
           </div>
           <div className={styles.environment__top__right}>
             {opponents?.length && opponents.length >= 2 && (
-              <Player setError={setError} player={opponents[1]} />
+              <Player
+                playing={engine.playing}
+                setError={setError}
+                player={opponents[1]}
+              />
             )}
             {opponents?.length && opponents.length >= 4 && (
-              <Player setError={setError} player={opponents[3]} />
+              <Player
+                playing={engine.playing}
+                setError={setError}
+                player={opponents[3]}
+              />
             )}
           </div>
-        </div>
+        </div>{" "}
+        {!!environment?.next && (
+          <CAlert color="success" style={{ padding: 5 }}>
+            {" "}
+            {environment.next.id === gamer?.id
+              ? `it's your turn to play`
+              : `it's ${environment?.next?.nickname}'s turn to play.`}
+          </CAlert>
+        )}
         <div className={styles.environment__bottom}>
           <div className={styles.environment__bottom__player__number}>
             {environment?.players.find((player) => player.id === gamer?.id)
@@ -222,6 +250,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
                   pair={pair}
                   setPair={setPair}
                   setError={setError}
+                  playing={engine.playing}
                 />
               ))}
           </div>

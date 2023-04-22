@@ -15,6 +15,7 @@ import Message from "../Message/Message";
 import Player from "../Player/Player";
 import Card from "../Card/Card";
 import StartGameBottomSheet from "../StartGameBottomSheet/StartGameBottomSheet";
+import DotCircular from "../DotCircular/DotCircular";
 
 interface Props {
   engine: Engine & {
@@ -29,6 +30,8 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
   const { isLoading, mutate } = trpc.game.updateNextPlayer.useMutation();
   const [pair, setPair] = React.useState<CardType[]>([]);
   const { environment } = useEnvironmentStore((state) => state);
+  const { mutate: mutateStopGame, isLoading: stoping } =
+    trpc.game.stopGame.useMutation();
   const [open, setOpen] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>("");
   const [played, setPlayed] = React.useState<CardType[]>([]);
@@ -107,13 +110,19 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
   };
 
   const {
-    dimension: { height },
+    dimension: { height, width },
   } = useMediaQuery();
 
   const toggle = () => setOpen((state) => !state);
 
+  const stopGame = async () => {
+    await mutateStopGame({
+      engineId: engine.id,
+    });
+  };
+
   return (
-    <View style={{ height: height - 200 }}>
+    <View style={{ minHeight: height }}>
       <View
         style={{
           flex: 0.6,
@@ -128,10 +137,18 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
           }}
         >
           {opponents?.length && opponents.length >= 1 ? (
-            <Player setError={setError} player={opponents[0]} />
+            <Player
+              setError={setError}
+              playing={engine.playing}
+              player={opponents[0]}
+            />
           ) : null}
           {opponents?.length && opponents.length >= 3 ? (
-            <Player setError={setError} player={opponents[2]} />
+            <Player
+              setError={setError}
+              playing={engine.playing}
+              player={opponents[2]}
+            />
           ) : null}
         </View>
         <View
@@ -153,6 +170,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                   maxWidth: 80,
                 },
               ]}
+              disabled={engine.playing}
               onPress={toggle}
             >
               <Text style={[styles.button__text, { color: COLORS.white }]}>
@@ -180,7 +198,8 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
               only the admin of the environment can start the game.
             </Text>
           )}
-          <View style={{}}>
+
+          <View style={{ marginHorizontal: 10 }}>
             {!!!environment?.played.length ? (
               <View
                 style={{
@@ -266,33 +285,69 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             )}
           </View>
 
-          {!!environment?.next ? (
-            <View style={{ paddingHorizontal: 10, width: "100%" }}>
-              <Message
-                error={false}
-                message={
-                  environment.next.id === gamer?.id
-                    ? `it's your turn to play`
-                    : `it's ${environment?.next?.nickname}'s turn to play.`
-                }
-              />
-            </View>
+          {engine.playing && engine.adminId === gamer?.id ? (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: COLORS.red,
+                  padding: 5,
+                  borderRadius: 5,
+                  maxWidth: 80,
+                },
+              ]}
+              disabled={stoping || !engine.playing}
+              onPress={stopGame}
+            >
+              <Text
+                style={[
+                  styles.button__text,
+                  { color: COLORS.white, marginRight: stoping ? 5 : 0 },
+                ]}
+              >
+                Stop
+              </Text>
+              {stoping && <DotCircular color={COLORS.secondary} size={10} />}
+            </TouchableOpacity>
           ) : null}
         </View>
         <View
           style={{
             flex: 2,
             padding: 5,
+            display: width < 600 && opponents?.length === 1 ? "none" : "flex",
           }}
         >
           {opponents?.length && opponents.length >= 2 ? (
-            <Player setError={setError} player={opponents[1]} />
+            <Player
+              playing={engine.playing}
+              setError={setError}
+              player={opponents[1]}
+            />
           ) : null}
           {opponents?.length && opponents.length >= 4 ? (
-            <Player setError={setError} player={opponents[3]} />
+            <Player
+              playing={engine.playing}
+              setError={setError}
+              player={opponents[3]}
+            />
           ) : null}
         </View>
       </View>
+
+      {!!environment?.next ? (
+        <View style={{ paddingHorizontal: 10, width: "100%" }}>
+          <Message
+            error={false}
+            message={
+              environment.next.id === gamer?.id
+                ? `it's your turn to play`
+                : `it's ${environment?.next?.nickname}'s turn to play.`
+            }
+          />
+        </View>
+      ) : null}
       <View style={{ flex: 0.4, position: "relative", padding: 10 }}>
         {!!error ? <Message error message={error} /> : null}
         <View
@@ -336,6 +391,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                 pair={pair}
                 setPair={setPair}
                 setError={setError}
+                playing={engine.playing}
               />
             ))}
         </View>
@@ -352,9 +408,15 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             },
           ]}
         >
-          <Text style={[styles.button__text, { color: COLORS.white }]}>
+          <Text
+            style={[
+              styles.button__text,
+              { color: COLORS.white, marginRight: isLoading ? 5 : 0 },
+            ]}
+          >
             Done
           </Text>
+          {isLoading ? <DotCircular color={COLORS.main} size={10} /> : null}
         </TouchableOpacity>
       </View>
 

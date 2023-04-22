@@ -5,6 +5,7 @@ import { CardType, GamerType } from "@blackjack/server";
 import { useEnvironmentStore, useGamerStore } from "@/store";
 import { trpc } from "@/utils/trpc";
 interface Props {
+  playing: boolean;
   player: {
     password: string;
     total: number;
@@ -22,7 +23,7 @@ interface Props {
   };
   setError?: React.Dispatch<React.SetStateAction<string>>;
 }
-const Player: React.FC<Props> = ({ player, setError }) => {
+const Player: React.FC<Props> = ({ player, setError, playing }) => {
   const { environment, pickCard: choseCard } = useEnvironmentStore((s) => s);
   const { isLoading, mutate } = trpc.game.updateGameEnvironment.useMutation();
   const { gamer } = useGamerStore((s) => s);
@@ -89,6 +90,7 @@ const Player: React.FC<Props> = ({ player, setError }) => {
           .sort((_) => Math.random() - 0.5)
           .map((card) => (
             <Card
+              playing={playing}
               onClick={() => pickCard(card)}
               show={false}
               card={card}

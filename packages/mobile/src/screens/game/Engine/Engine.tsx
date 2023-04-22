@@ -120,6 +120,18 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
       },
     }
   );
+  trpc.game.onGameStop.useSubscription(
+    { gamerId: gamer?.id || "", engineId },
+    {
+      onData: async ({ message }) => {
+        Toast.show({
+          type: "success",
+          text1: "Game Stopped",
+          text2: message,
+        });
+      },
+    }
+  );
   trpc.engine.onDeleteEngine.useSubscription(
     { engineId },
     {

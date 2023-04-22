@@ -18,6 +18,8 @@ import {
   removeGamerSchema,
   onGamerRemovedSchema,
   gamersSchema,
+  stopGameSchema,
+  onGameStopSchema,
 } from "../../schema/game/game.schema";
 import { publicProcedure, router } from "../../trpc";
 import { playerPoints, shareCards, shuffle, verifyJwt } from "../../utils";
@@ -42,6 +44,21 @@ export const gameRouter = router({
         ee.on(Events.ON_GAME_START, handleEvent);
         return () => {
           ee.off(Events.ON_GAME_START, handleEvent);
+        };
+      });
+    }),
+  onGameStop: publicProcedure
+    .input(onGameStopSchema)
+    .subscription(({ input: { engineId, gamerId } }) => {
+      return observable<{ message: string }>((emit) => {
+        const handleEvent = async ({ engine }: { engine: Engine }) => {
+          if (engineId === engine.id && engine.adminId !== gamerId) {
+            emit.next({ message: "the admin has stopped the game." });
+          }
+        };
+        ee.on(Events.ON_GAME_STOP, handleEvent);
+        return () => {
+          ee.off(Events.ON_GAME_STOP, handleEvent);
         };
       });
     }),
@@ -239,9 +256,9 @@ export const gameRouter = router({
     .input(removeGamerSchema)
     .mutation(async ({ input: { gamerId }, ctx: { prisma, req } }) => {
       const jwt =
-      req.cookies[__cookieName__] ||
-      req.headers.authorization?.split(/\s/)[1] ||
-      "";
+        req.cookies[__cookieName__] ||
+        req.headers.authorization?.split(/\s/)[1] ||
+        "";
       if (!!!jwt) return false;
       try {
         const payload = await verifyJwt(jwt);
@@ -372,6 +389,42 @@ export const gameRouter = router({
         };
       }
     ),
+
+  stopGame: publicProcedure
+    .input(stopGameSchema)
+    .mutation(async ({ input: { engineId }, ctx: { prisma } }) => {
+      const engine = await prisma.engine.findFirst({
+        where: {
+          id: engineId,
+        },
+        include: {
+          messages: {
+            include: {
+              sender: true,
+            },
+          },
+        },
+      });
+      if (!!!engine)
+        return {
+          error: { field: "engine", message: "Failed to find the engine." },
+        };
+      await prisma.message.deleteMany({ where: { engineId: engine.id } });
+
+      const _engine = await prisma.engine.update({
+        where: { id: engine.id },
+        data: {
+          active: false,
+          playing: false,
+        },
+      });
+
+      ee.emit(Events.ON_ENGINE_STATE_CHANGE, _engine);
+      ee.emit(Events.ON_GAME_STOP, { engine });
+      return {
+        engine,
+      };
+    }),
   onGameStateChanged: publicProcedure
     .input(onGameStateChangedSchema)
     .subscription(({ input: { engineId } }) => {

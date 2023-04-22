@@ -131,6 +131,7 @@ export const engineRouter = router({
         };
       }
     }),
+
   joinEngine: publicProcedure
     .input(joinEngineSchema)
     .mutation(async ({ ctx: { prisma, req }, input: { engineId } }) => {
@@ -166,6 +167,23 @@ export const engineRouter = router({
             error: {
               message:
                 "enable to find the game engine/environment it might have been deleted.",
+              field: "engine",
+            },
+          };
+
+        if (engine.gamersIds.length === 5)
+          return {
+            error: {
+              message:
+                "engine full only 5 people are allowed to be in as single environment.",
+              field: "engine",
+            },
+          };
+        if (engine.playing && gamer.id !== engine.adminId)
+          return {
+            error: {
+              message:
+                "the engine has a game running please wait for the game to be finished.",
               field: "engine",
             },
           };
