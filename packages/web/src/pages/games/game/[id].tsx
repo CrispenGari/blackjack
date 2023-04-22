@@ -11,7 +11,11 @@ import {
 import { CButton, CImage, CToaster } from "@coreui/react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
-import { useEnvironmentStore, useGamerStore } from "@/store";
+import {
+  useCurrentEngineStore,
+  useEnvironmentStore,
+  useGamerStore,
+} from "@/store";
 
 interface Props {}
 const Game: React.FC<Props> = ({}) => {
@@ -22,6 +26,7 @@ const Game: React.FC<Props> = ({}) => {
   } = trpc.gamer.gamer.useQuery();
   const { mutate: mutateUpdateGamePosition } =
     trpc.game.updateGamePositions.useMutation();
+  const { setEngine } = useCurrentEngineStore((s) => s);
   const router = useRouter();
   const [toast, addToast] = React.useState(0);
   const [openResults, setOpenResults] = React.useState<boolean>(false);
@@ -34,13 +39,14 @@ const Game: React.FC<Props> = ({}) => {
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
     engineId,
   });
-  const { mutate: mutateLeaveEngine, isLoading: leaving } =
+  const { mutateAsync: mutateLeaveEngine, isLoading: leaving } =
     trpc.engine.leaveEngine.useMutation();
 
   trpc.engine.onEngineStateChanged.useSubscription(
     { engineId },
     {
       onData: async (data) => {
+        setEngine(data);
         setGamersIds(data.gamersIds);
         await refetch();
       },
@@ -91,7 +97,8 @@ const Game: React.FC<Props> = ({}) => {
   trpc.game.onGameStart.useSubscription(
     { gamerId: gamer?.id || "", engineId },
     {
-      onData: async ({ message }) => {
+      onData: async ({ message, engine }) => {
+        setEngine(engine);
         addToast(
           Toast({
             message,
@@ -105,7 +112,8 @@ const Game: React.FC<Props> = ({}) => {
   trpc.game.onGameStop.useSubscription(
     { gamerId: gamer?.id || "", engineId },
     {
-      onData: async ({ message }) => {
+      onData: async ({ message, engine }) => {
+        setEngine(engine);
         addToast(
           Toast({
             message,
@@ -120,6 +128,7 @@ const Game: React.FC<Props> = ({}) => {
     {
       onData: (data) => {
         if (data.id === engineId) {
+          setEngine(null);
           router.replace("/games");
         }
       },
@@ -188,8 +197,12 @@ const Game: React.FC<Props> = ({}) => {
   }, [environment, mutateUpdateGamePosition]);
 
   const leaveEngine = async () => {
-    await mutateLeaveEngine({ engineId });
-    router.replace("/games");
+    mutateLeaveEngine({ engineId }).then(({ engine }) => {
+      if (!!engine) {
+        setEngine(null);
+        router.replace("/games");
+      }
+    });
   };
 
   React.useEffect(() => {

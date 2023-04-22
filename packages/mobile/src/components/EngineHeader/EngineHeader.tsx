@@ -7,6 +7,7 @@ import { trpc } from "../../utils/trpc";
 import DotCircular from "../DotCircular/DotCircular";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppParamList } from "../../params";
+import { useCurrentEngineStore } from "../../store";
 
 interface Props {
   engine: Engine;
@@ -18,9 +19,12 @@ const EngineHeader: React.FunctionComponent<Props> = ({
 }) => {
   const { mutateAsync: mutateLeaveEngine, isLoading: leaving } =
     trpc.engine.leaveEngine.useMutation();
+
+  const { setEngine } = useCurrentEngineStore((s) => s);
   const leaveEngine = () => {
     mutateLeaveEngine({ engineId: engine.id }).then(({ engine, error }) => {
       if (!!engine) {
+        setEngine(null);
         navigation.replace("Engines");
       }
       if (!!error) {

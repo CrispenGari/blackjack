@@ -55,7 +55,10 @@ const getEndingLink = () => {
   });
 };
 const TRPCProvider: React.FC<Props> = ({ children }) => {
-  const links = [loggerLink(), getEndingLink()];
+  const links = [
+    // loggerLink(),
+    getEndingLink(),
+  ];
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({

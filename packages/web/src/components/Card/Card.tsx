@@ -1,5 +1,4 @@
 import { useEnvironmentStore, useGamerStore } from "@/store";
-import { trpc } from "@/utils/trpc";
 import { CardType, GamerType } from "@blackjack/server";
 import { CImage } from "@coreui/react";
 import React from "react";

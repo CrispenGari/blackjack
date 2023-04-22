@@ -1,4 +1,8 @@
-import { useEnvironmentStore, useGamerStore } from "@/store";
+import {
+  useCurrentEngineStore,
+  useEnvironmentStore,
+  useGamerStore,
+} from "@/store";
 import {
   CardType,
   Engine,
@@ -28,6 +32,8 @@ const Environment: React.FC<Props> = ({ engine }) => {
   const { isLoading, mutate } = trpc.game.updateNextPlayer.useMutation();
   const { mutate: mutateStopGame, isLoading: stoping } =
     trpc.game.stopGame.useMutation();
+
+  const { engine: currentEngine } = useCurrentEngineStore((s) => s);
 
   const [pair, setPair] = React.useState<CardType[]>([]);
   const { environment } = useEnvironmentStore((state) => state);
@@ -123,21 +129,24 @@ const Environment: React.FC<Props> = ({ engine }) => {
           <div className={styles.environment__top__left}>
             {opponents?.length && opponents.length >= 1 && (
               <Player
-                playing={engine.playing}
+                playing={!!currentEngine?.playing}
                 setError={setError}
                 player={opponents[0]}
               />
             )}
             {opponents?.length && opponents.length >= 3 && (
               <Player
-                playing={engine.playing}
+                playing={!!currentEngine?.playing}
                 setError={setError}
                 player={opponents[2]}
               />
             )}
           </div>
           <div className={styles.environment__top__center}>
-            {engine.adminId === gamer?.id ? (
+            {!!gamer &&
+            !!currentEngine &&
+            engine.adminId === gamer.id &&
+            !currentEngine.playing ? (
               <CButton onClick={() => setOpen(true)}>Start</CButton>
             ) : engine.playing ? (
               <p>the game has started</p>
@@ -189,7 +198,10 @@ const Environment: React.FC<Props> = ({ engine }) => {
                 ))
               )}
             </div>
-            {engine.adminId === gamer?.id && (
+            {!!gamer &&
+            !!currentEngine &&
+            engine.adminId === gamer.id &&
+            currentEngine.playing ? (
               <CButton
                 onClick={stopGame}
                 disabled={stoping}
@@ -197,19 +209,19 @@ const Environment: React.FC<Props> = ({ engine }) => {
               >
                 Stop
               </CButton>
-            )}
+            ) : null}
           </div>
           <div className={styles.environment__top__right}>
             {opponents?.length && opponents.length >= 2 && (
               <Player
-                playing={engine.playing}
+                playing={!!currentEngine?.playing}
                 setError={setError}
                 player={opponents[1]}
               />
             )}
             {opponents?.length && opponents.length >= 4 && (
               <Player
-                playing={engine.playing}
+                playing={!!currentEngine?.playing}
                 setError={setError}
                 player={opponents[3]}
               />
@@ -250,7 +262,7 @@ const Environment: React.FC<Props> = ({ engine }) => {
                   pair={pair}
                   setPair={setPair}
                   setError={setError}
-                  playing={engine.playing}
+                  playing={!!currentEngine?.playing}
                 />
               ))}
           </div>

@@ -35,10 +35,12 @@ export const gameRouter = router({
   onGameStart: publicProcedure
     .input(onGameStartSchema)
     .subscription(({ input: { engineId, gamerId } }) => {
-      return observable<{ message: string }>((emit) => {
+      return observable<{ message: string; engine: Engine }>((emit) => {
         const handleEvent = async ({ engine }: { engine: Engine }) => {
           if (engineId === engine.id && engine.adminId !== gamerId) {
-            emit.next({ message: "the game has started." });
+            emit.next({ message: "the admin has started the game.", engine });
+          } else {
+            emit.next({ message: "you started the game.", engine });
           }
         };
         ee.on(Events.ON_GAME_START, handleEvent);
@@ -50,10 +52,12 @@ export const gameRouter = router({
   onGameStop: publicProcedure
     .input(onGameStopSchema)
     .subscription(({ input: { engineId, gamerId } }) => {
-      return observable<{ message: string }>((emit) => {
+      return observable<{ message: string; engine: Engine }>((emit) => {
         const handleEvent = async ({ engine }: { engine: Engine }) => {
           if (engineId === engine.id && engine.adminId !== gamerId) {
-            emit.next({ message: "the admin has stopped the game." });
+            emit.next({ message: "the admin has stopped the game.", engine });
+          } else {
+            emit.next({ message: "you stopped the game.", engine });
           }
         };
         ee.on(Events.ON_GAME_STOP, handleEvent);
@@ -382,7 +386,7 @@ export const gameRouter = router({
         };
         ee.emit(Events.ON_GAME_STATE_CHANGE, payload);
         ee.emit(Events.ON_ENGINE_STATE_CHANGE, _engine);
-        ee.emit(Events.ON_GAME_START, { engine });
+        ee.emit(Events.ON_GAME_START, { engine: _engine });
         return {
           blackJack,
           players: gamePlayers,
@@ -418,11 +422,10 @@ export const gameRouter = router({
           playing: false,
         },
       });
-
       ee.emit(Events.ON_ENGINE_STATE_CHANGE, _engine);
-      ee.emit(Events.ON_GAME_STOP, { engine });
+      ee.emit(Events.ON_GAME_STOP, { engine: _engine });
       return {
-        engine,
+        engine: _engine,
       };
     }),
   onGameStateChanged: publicProcedure

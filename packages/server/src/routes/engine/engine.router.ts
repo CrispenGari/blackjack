@@ -171,7 +171,7 @@ export const engineRouter = router({
             },
           };
 
-        if (engine.gamersIds.length === 5)
+        if (engine.gamersIds.filter((i) => gamer.id !== i).length === 5)
           return {
             error: {
               message:

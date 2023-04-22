@@ -1,4 +1,4 @@
-import { useGamerStore } from "@/store";
+import { useCurrentEngineStore, useGamerStore } from "@/store";
 import { trpc } from "@/utils/trpc";
 import { Engine } from "@blackjack/server";
 import {
@@ -6,7 +6,6 @@ import {
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CForm,
   CAlert,
   CModalFooter,
   CButton,
@@ -22,31 +21,33 @@ interface Props {
 }
 const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
   const router = useRouter();
-  const { data, mutate, isLoading } = trpc.engine.joinEngine.useMutation();
+  const { data, mutateAsync, isLoading } = trpc.engine.joinEngine.useMutation();
   const { gamer } = useGamerStore((s) => s);
+  const { setEngine, engine: currentEngine } = useCurrentEngineStore((s) => s);
   const { data: gamers } = trpc.game.gamers.useQuery({
     ids: engine.gamersIds.filter((id) => id !== gamer?.id),
   });
   const {
     data: deleteEngineData,
-    mutate: mutateDeleteEngine,
+    mutateAsync: mutateDeleteEngine,
     isLoading: deleting,
   } = trpc.engine.deleteEngine.useMutation();
-  const onSubmit = async () => {
-    await mutate({ engineId: engine.id });
+  const onSubmit = () => {
+    mutateAsync({ engineId: engine.id }).then(({ engine }) => {
+      if (!!engine) {
+        setEngine(engine);
+        router.push(`/games/game/${engine.id}`);
+      }
+    });
   };
-  const deleteEngine = async () => {
-    await mutateDeleteEngine({ engineId: engine.id });
+  const deleteEngine = () => {
+    mutateDeleteEngine({ engineId: engine.id }).then(({ engine }) => {
+      if (!!engine) {
+        setEngine(null);
+        setOpen(false);
+      }
+    });
   };
-  React.useEffect(() => {
-    let mounted: boolean = true;
-    if (mounted && !!data?.engine) {
-      router.push(`/games/game/${data.engine.id}`);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [data, router]);
 
   return (
     <CModal
@@ -58,6 +59,15 @@ const GameEngineModal: React.FC<Props> = ({ engine, setOpen, open }) => {
         <CModalTitle>Join Game Environment - {engine.name}</CModalTitle>
       </CModalHeader>
       <CModalBody className={styles.game__engine__modal__body}>
+        {!!currentEngine && currentEngine.id !== engine.id ? (
+          <CAlert
+            style={{ marginTop: 10, userSelect: "none", padding: 5 }}
+            color="info"
+            variant="solid"
+          >
+            {`Remember that you haven't left the game engine "${currentEngine.name}".`}
+          </CAlert>
+        ) : null}
         <h1>
           {gamers?.gamers.length}{" "}
           {gamers?.gamers.length === 1 ? "opponent" : "opponents"} in the

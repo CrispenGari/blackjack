@@ -1,4 +1,4 @@
-export const engrokDomain: string = "7e00-102-66-86-132.ngrok-free.app";
+export const engrokDomain: string = "0230-102-66-197-26.ngrok-free.app";
 
 export const relativeTimeObject = {
   future: "in %s",

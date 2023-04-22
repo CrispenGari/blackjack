@@ -2,15 +2,14 @@ import { View, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import React from "react";
 import { AppNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
-import * as ScreenOrientation from "expo-screen-orientation";
-import {
-  EngineHeader,
-  Environment,
-  GameResultsBottomSheet,
-  Loading,
-} from "../../../components";
+import { EngineHeader, Environment, Loading } from "../../../components";
+import GameResultsBottomSheet from "../../../components/GameResultsBottomSheet/GameResultsBottomSheet";
 import { trpc } from "../../../utils/trpc";
-import { useEnvironmentStore, useGamerStore } from "../../../store";
+import {
+  useCurrentEngineStore,
+  useEnvironmentStore,
+  useGamerStore,
+} from "../../../store";
 import Toast from "react-native-toast-message";
 import { AntDesign } from "@expo/vector-icons";
 const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
@@ -19,11 +18,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     params: { engineId },
   },
 }) => {
-  const {
-    data: player,
-
-    isFetched,
-  } = trpc.gamer.gamer.useQuery();
+  const { data: player, isFetched } = trpc.gamer.gamer.useQuery();
   const { data: messages, refetch: refetchMessages } =
     trpc.message.messages.useQuery({
       engineId,
@@ -35,16 +30,16 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   const { setEnvironment, setGamersIds, environment } = useEnvironmentStore(
     (state) => state
   );
-
+  const { setEngine } = useCurrentEngineStore((s) => s);
   const { gamer, setGamer } = useGamerStore((state) => state);
   const { data, isLoading, refetch } = trpc.engine.engine.useQuery({
     engineId,
   });
-
   trpc.engine.onEngineStateChanged.useSubscription(
     { engineId },
     {
       onData: async (data) => {
+        setEngine(data);
         setGamersIds(data.gamersIds);
         await refetch();
       },
@@ -95,7 +90,8 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   trpc.game.onGameStart.useSubscription(
     { gamerId: gamer?.id || "", engineId },
     {
-      onData: async ({ message }) => {
+      onData: async ({ message, engine }) => {
+        setEngine(engine);
         Toast.show({
           type: "success",
           text1: "Game Started",
@@ -107,7 +103,8 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
   trpc.game.onGameStop.useSubscription(
     { gamerId: gamer?.id || "", engineId },
     {
-      onData: async ({ message }) => {
+      onData: ({ message, engine }) => {
+        setEngine(engine);
         Toast.show({
           type: "success",
           text1: "Game Stopped",
@@ -121,6 +118,7 @@ const Engine: React.FunctionComponent<AppNavProps<"Engine">> = ({
     {
       onData: (data) => {
         if (data.id === engineId) {
+          setEngine(null);
           navigation.replace("Engines");
         }
       },

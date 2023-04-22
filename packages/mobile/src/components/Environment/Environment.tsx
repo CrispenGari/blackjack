@@ -6,7 +6,11 @@ import {
   Gamer,
   CardType,
 } from "@blackjack/server";
-import { useGamerStore, useEnvironmentStore } from "../../store";
+import {
+  useGamerStore,
+  useEnvironmentStore,
+  useCurrentEngineStore,
+} from "../../store";
 import { trpc } from "../../utils/trpc";
 import { CARDS, CARDS_BACK, COLORS, FONTS } from "../../constants";
 import { styles } from "../../styles";
@@ -30,7 +34,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
   const { isLoading, mutate } = trpc.game.updateNextPlayer.useMutation();
   const [pair, setPair] = React.useState<CardType[]>([]);
   const { environment } = useEnvironmentStore((state) => state);
-  const { mutate: mutateStopGame, isLoading: stoping } =
+  const { mutateAsync: mutateStopGame, isLoading: stoping } =
     trpc.game.stopGame.useMutation();
   const [open, setOpen] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>("");
@@ -114,13 +118,16 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
   } = useMediaQuery();
 
   const toggle = () => setOpen((state) => !state);
-
-  const stopGame = async () => {
-    await mutateStopGame({
+  const { engine: currentEngine, setEngine } = useCurrentEngineStore((s) => s);
+  const stopGame = () => {
+    mutateStopGame({
       engineId: engine.id,
+    }).then(({ engine }) => {
+      if (!!engine) {
+        setEngine(engine);
+      }
     });
   };
-
   return (
     <View style={{ minHeight: height }}>
       <View
@@ -139,14 +146,14 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
           {opponents?.length && opponents.length >= 1 ? (
             <Player
               setError={setError}
-              playing={engine.playing}
+              playing={!!currentEngine?.playing}
               player={opponents[0]}
             />
           ) : null}
           {opponents?.length && opponents.length >= 3 ? (
             <Player
               setError={setError}
-              playing={engine.playing}
+              playing={!!currentEngine?.playing}
               player={opponents[2]}
             />
           ) : null}
@@ -158,7 +165,10 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             alignItems: "center",
           }}
         >
-          {engine.adminId === gamer?.id ? (
+          {!!gamer &&
+          !!currentEngine &&
+          engine.adminId === gamer.id &&
+          !currentEngine.playing ? (
             <TouchableOpacity
               activeOpacity={0.7}
               style={[
@@ -284,7 +294,10 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
             )}
           </View>
 
-          {engine.adminId === gamer?.id ? (
+          {!!gamer &&
+          !!currentEngine &&
+          engine.adminId === gamer.id &&
+          currentEngine.playing ? (
             <TouchableOpacity
               activeOpacity={0.7}
               style={[
@@ -320,14 +333,14 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
         >
           {opponents?.length && opponents.length >= 2 ? (
             <Player
-              playing={engine.playing}
+              playing={!!currentEngine?.playing}
               setError={setError}
               player={opponents[1]}
             />
           ) : null}
           {opponents?.length && opponents.length >= 4 ? (
             <Player
-              playing={engine.playing}
+              playing={!!currentEngine?.playing}
               setError={setError}
               player={opponents[3]}
             />
@@ -390,7 +403,7 @@ const Environment: React.FunctionComponent<Props> = ({ engine }) => {
                 pair={pair}
                 setPair={setPair}
                 setError={setError}
-                playing={engine.playing}
+                playing={!!currentEngine?.playing}
               />
             ))}
         </View>

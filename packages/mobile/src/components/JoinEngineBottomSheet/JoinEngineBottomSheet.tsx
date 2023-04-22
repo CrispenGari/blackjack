@@ -13,7 +13,7 @@ import { styles } from "../../styles";
 import { useMediaQuery } from "../../hooks";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppParamList } from "../../params";
-import { useGamerStore } from "../../store";
+import { useCurrentEngineStore, useGamerStore } from "../../store";
 import { trpc } from "../../utils/trpc";
 import Oponent from "../Oponent/Oponent";
 import Message from "../Message/Message";
@@ -43,9 +43,11 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
   } = trpc.engine.deleteEngine.useMutation();
   const { data, mutateAsync, isLoading } = trpc.engine.joinEngine.useMutation();
 
+  const { setEngine, engine: currentEngine } = useCurrentEngineStore((s) => s);
   const joinEngine = () => {
     mutateAsync({ engineId: engine.id }).then(({ engine }) => {
       if (!!engine) {
+        setEngine(engine);
         toggle();
         navigation.navigate("Engine", {
           engineId: engine.id,
@@ -85,6 +87,12 @@ const JoinEngineBottomSheet: React.FunctionComponent<Props> = ({
           <Text style={[styles.h1, { color: COLORS.white, fontSize: 25 }]}>
             Join Game Environment - {engine.name}
           </Text>
+          {!!currentEngine && currentEngine.id !== engine.id ? (
+            <Message
+              error={false}
+              message={`Remember that you haven't left the game engine "${currentEngine.name}".`}
+            />
+          ) : null}
         </View>
         <Text
           style={[
